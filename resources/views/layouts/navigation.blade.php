@@ -17,10 +17,10 @@
 
                 <div>
                     <h1 class="text-lg font-bold text-gray-800">
-                        Monitoring
+                        Bank Sampah RW.04
                     </h1>
                     <p class="text-xs text-gray-500">
-                        Sistem Santri
+                        Sistem Informasi Manajemen Penjualan Sampah
                     </p>
                 </div>
             </a>
@@ -94,7 +94,7 @@
 
             <!-- Tambah Menu -->
             <div class="mt-2">
-                <a href="#"
+                 <a href="{{ route('jenis-sampah.index') }}"
                    class="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:bg-gray-100 transition">
 
                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -109,7 +109,7 @@
                             d="M9 17v-2a4 4 0 014-4h4"/>
                     </svg>
 
-                    <span>Data Santri</span>
+                    <span>Input Jenis Sampah</span>
                 </a>
             </div>
         </div>
