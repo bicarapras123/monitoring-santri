@@ -49,8 +49,7 @@
                 </h1>
 
                 <p class="text-lg text-blue-100 leading-relaxed">
-                    Silahkan login untuk mengakses dashboard monitoring
-                    santri dan santriwati pondok pesantren secara realtime.
+                    Silahkan login untuk mengakses dashboard tabungan bank sampah secara realtime.
                 </p>
 
                 <div class="grid grid-cols-2 gap-5 mt-10">

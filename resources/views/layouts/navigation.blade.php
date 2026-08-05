@@ -43,20 +43,24 @@
                 </p>
 
                 <div class="mt-2 inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
-                    @if(Auth::user()->role == 'pengelola')
+                    @if(Auth::user()->role == 'admin')
                         bg-indigo-100 text-indigo-700
-                    @elseif(Auth::user()->role == 'pengajar')
+                    @elseif(Auth::user()->role == 'rw')
                         bg-emerald-100 text-emerald-700
+                    @elseif(Auth::user()->role == 'bank_sampah_induk')
+                        bg-purple-100 text-purple-700
                     @else
                         bg-orange-100 text-orange-700
                     @endif">
 
-                    @if(Auth::user()->role == 'pengelola')
-                        Pengelola
-                    @elseif(Auth::user()->role == 'pengajar')
-                        Pengajar
+                    @if(Auth::user()->role == 'admin')
+                        Admin
+                    @elseif(Auth::user()->role == 'rw')
+                        RW
+                    @elseif(Auth::user()->role == 'bank_sampah_induk')
+                        Bank Sampah Induk
                     @else
-                        Orang Tua
+                        Nasabah
                     @endif
 
                 </div>
@@ -92,10 +96,11 @@
                 </span>
             </a>
 
-            <!-- Tambah Menu -->
+            <!-- Menu Khusus Admin (Desktop) -->
+            @if(Auth::user()->role == 'admin')
             <div class="mt-2">
                  <a href="{{ route('jenis-sampah.index') }}"
-                   class="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:bg-gray-100 transition">
+                    class="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:bg-gray-100 transition">
 
                     <svg xmlns="http://www.w3.org/2000/svg"
                         class="h-5 w-5"
@@ -112,6 +117,7 @@
                     <span>Input Jenis Sampah</span>
                 </a>
             </div>
+            @endif
         </div>
 
         <!-- Bottom -->
@@ -201,7 +207,7 @@
 
                 <div class="p-6 border-b">
                     <h2 class="text-xl font-bold text-gray-800">
-                        Monitoring Santri
+                        Bank Sampah RW.04
                     </h2>
 
                     <p class="text-sm text-gray-500">
@@ -217,11 +223,14 @@
                         Dashboard
                     </a>
 
-                    <a href="#"
+                    <!-- Menu Khusus Admin (Mobile) -->
+                    @if(Auth::user()->role == 'admin')
+                    <a href="{{ route('jenis-sampah.index') }}"
                         class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100 text-gray-700">
 
-                        Data Santri
+                        Input Jenis Sampah
                     </a>
+                    @endif
 
                     <a href="{{ route('profile.edit') }}"
                         class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100 text-gray-700">

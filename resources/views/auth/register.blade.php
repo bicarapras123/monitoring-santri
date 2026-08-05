@@ -38,11 +38,11 @@
 
                 {{-- Heading --}}
                 <h1 class="text-4xl font-bold leading-tight mb-4">
-                    Sistem Monitoring Santri
+                    Sistem Informasi Manajemen Berbasis Website
                 </h1>
 
                 <p class="text-white/90 leading-relaxed text-sm lg:text-base">
-                    Platform modern untuk memantau perkembangan dan aktivitas santri secara digital, cepat, dan efisien.
+                    Platform modern untuk memantau perkembangan dan aktivitas keuangan secara digital, cepat, dan efisien.
                 </p>
 
             </div>
@@ -52,7 +52,7 @@
 
                 <div class="bg-white/10 backdrop-blur-lg rounded-2xl px-4 py-3 flex-1">
                     <h3 class="font-bold text-lg">100%</h3>
-                    <p class="text-xs text-white/80">Gratis</p>
+                    <p class="text-xs text-white/80">Realtime</p>
                 </div>
 
                 <div class="bg-white/10 backdrop-blur-lg rounded-2xl px-4 py-3 flex-1">
