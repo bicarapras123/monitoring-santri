@@ -8,6 +8,9 @@ use App\Http\Controllers\NasabahController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RekeningNasabahController;
 use App\Http\Controllers\AdminNasabahController;
+use App\Http\Controllers\SetoranSampahController;
+use App\Http\Controllers\AdminTransaksiController;
+use App\Http\Controllers\PencairanController;
 use App\Models\JenisSampah;
 use Illuminate\Http\Request;
 
@@ -45,6 +48,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/rekening', [RekeningNasabahController::class, 'create'])->name('rekening.store');
     Route::get('/admin/nasabah', [AdminNasabahController::class, 'index'])->name('admin.nasabah.index');
     Route::get('/admin/nasabah/rekening', [AdminNasabahController::class, 'rekeningAjuan'])->name('admin.nasabah.rekening');
+    Route::get('/setoran-sampah/create', [SetoranSampahController::class, 'create'])->name('setoran.create');
+    Route::get('/admin/transaksi', [AdminTransaksiController::class, 'index'])->name('admin.transaksi.index');
+    Route::post('/setoran-sampah', [SetoranSampahController::class, 'store'])->name('setoran.store');
+    Route::post('/penarikan-saldo', [DashboardController::class, 'storePenarikan'])->name('penarikan.store');
+    Route::get('/nasabah/cetak-cash', [PencairanController::class, 'cetakCash'])->name('pencairan.cash.cetak');
     // TAMBAHKAN ROUTE VERIFIKASI INI:
     Route::patch('/admin/nasabah/rekening/{id}/verify', [AdminNasabahController::class, 'verifyRekening'])->name('admin.nasabah.verify');
 
