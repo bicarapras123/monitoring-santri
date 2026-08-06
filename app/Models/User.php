@@ -47,4 +47,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    /**
+     * Relasi ke Model Nasabah (One to One)
+     * Menghubungkan berdasarkan kesamaan nama user dengan nama_lengkap di tabel nasabahs.
+     */
+    public function nasabah()
+    {
+        return $this->hasOne(Nasabah::class, 'nama_lengkap', 'name');
+    }
 }

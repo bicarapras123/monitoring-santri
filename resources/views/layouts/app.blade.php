@@ -14,23 +14,32 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
+    <body class="font-sans antialiased bg-gray-100">
+        
+        <!-- Pembungkus Flexbox Utama (Layar Penuh & Terkunci) -->
+        <div class="flex h-screen overflow-hidden">
+            
+            <!-- Sidebar / Navigasi Kiri -->
             @include('layouts.navigation')
 
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
+            <!-- Area Konten Utama di Sebelah Kanan -->
+            <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+                
+                <!-- Page Heading (Jika Ada) -->
+                @isset($header)
+                    <header class="bg-white shadow-sm border-b border-gray-100">
+                        <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+                            {{ $header }}
+                        </div>
+                    </header>
+                @endisset
 
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
+                <!-- Page Content -->
+                <main class="flex-1">
+                    {{ $slot }}
+                </main>
+            </div>
+
         </div>
     </body>
 </html>

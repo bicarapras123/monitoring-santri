@@ -68,11 +68,13 @@
         </div>
 
         <!-- Menu -->
-        <div class="flex-1 overflow-y-auto px-4 py-6">
+        <div class="flex-1 overflow-y-auto px-4 py-6 space-y-1">
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-3">
                 Menu Utama
             </p>
 
+            <!-- MENU DASHBOARD: HANYA MUNCUL UNTUK NASABAH & ORANG TUA -->
+            @if(in_array(Auth::user()->role, ['nasabah', 'orang_tua']))
             <a href="{{ route('dashboard') }}"
                class="flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200
                {{ request()->routeIs('dashboard')
@@ -95,15 +97,57 @@
                     Dashboard
                 </span>
             </a>
+            @endif
 
             <!-- Menu Khusus Admin (Desktop) -->
             @if(Auth::user()->role == 'admin')
-            <div class="mt-2">
+            
+            <!-- Dropdown Menu Kelola Nasabah -->
+            <div x-data="{ nasabahOpen: {{ request()->routeIs('admin.nasabah.*') ? 'true' : 'false' }} }">
+                <!-- Tombol Utama Dropdown -->
+                <button @click="nasabahOpen = !nasabahOpen" 
+                    class="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-gray-700 hover:bg-gray-100 transition {{ request()->routeIs('admin.nasabah.*') ? 'bg-indigo-50/60 text-indigo-700 font-semibold' : '' }}">
+                    
+                    <div class="flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="h-5 w-5 flex-shrink-0"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                        <span class="text-xs font-medium whitespace-nowrap">Kelola Data Nasabah</span>
+                    </div>
+
+                    <!-- Icon Panah Dropdown -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-200" :class="nasabahOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+
+                <!-- Sub-Menu / Isi Dropdown -->
+                <div x-show="nasabahOpen" x-transition class="pl-4 pr-2 py-1.5 space-y-1 mt-1 border-l-2 border-indigo-100 ml-4">
+                    <a href="{{ route('admin.nasabah.index') }}" 
+                        class="block px-3.5 py-2.5 rounded-xl text-xs font-medium transition {{ request()->routeIs('admin.nasabah.index') ? 'text-indigo-700 bg-indigo-50 font-semibold' : 'text-gray-600 hover:bg-gray-100' }}">
+                        Semua Nasabah
+                    </a>
+                    <a href="{{ route('admin.nasabah.rekening') }}" 
+                        class="block px-3.5 py-2.5 rounded-xl text-xs font-medium transition {{ request()->routeIs('admin.nasabah.rekening') ? 'text-indigo-700 bg-indigo-50 font-semibold' : 'text-gray-600 hover:bg-gray-100' }}">
+                        Pengajuan Rekening
+                    </a>
+                </div>
+            </div>
+
+            <!-- Menu Kelola Jenis & Harga Sampah -->
+            <div>
                  <a href="{{ route('jenis-sampah.index') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:bg-gray-100 transition">
+                    class="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:bg-gray-100 transition {{ request()->routeIs('jenis-sampah.*') ? 'bg-indigo-50 text-indigo-700 font-semibold' : '' }}">
 
                     <svg xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5"
+                        class="h-5 w-5 flex-shrink-0"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor">
@@ -114,16 +158,16 @@
                             d="M9 17v-2a4 4 0 014-4h4"/>
                     </svg>
 
-                    <span>Input Jenis Sampah</span>
+                    <span class="text-xs font-medium whitespace-nowrap">Kelola Jenis & Harga Sampah</span>
                 </a>
             </div>
             @endif
         </div>
 
         <!-- Bottom -->
-        <div class="p-4 border-t border-gray-100">
+        <div class="p-4 border-t border-gray-100 space-y-1">
             <a href="{{ route('profile.edit') }}"
-               class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-100 transition">
+               class="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:bg-gray-100 transition text-xs font-medium">
                 
                 <svg xmlns="http://www.w3.org/2000/svg"
                     class="h-5 w-5"
@@ -140,11 +184,11 @@
                 <span>Profile</span>
             </a>
 
-            <form method="POST" action="{{ route('logout') }}" class="mt-2">
+            <form method="POST" action="{{ route('logout') }}">
                 @csrf
 
                 <button type="submit"
-                    class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition">
+                    class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-red-600 hover:bg-red-50 transition text-xs font-medium">
 
                     <svg xmlns="http://www.w3.org/2000/svg"
                         class="h-5 w-5"
@@ -164,21 +208,18 @@
         </div>
     </aside>
 
-    <!-- Mobile -->
+    <!-- Mobile Wrapper -->
     <div class="flex-1 flex flex-col overflow-hidden">
 
-        <!-- Topbar -->
+        <!-- Topbar Mobile -->
         <header class="bg-white shadow-sm border-b border-gray-100 h-16 flex items-center justify-between px-5 md:hidden">
-
             <button @click="open = !open"
                 class="p-2 rounded-lg hover:bg-gray-100">
-
                 <svg xmlns="http://www.w3.org/2000/svg"
                     class="h-6 w-6 text-gray-700"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor">
-
                     <path stroke-linecap="round"
                         stroke-linejoin="round"
                         stroke-width="2"
@@ -186,16 +227,16 @@
                 </svg>
             </button>
 
-            <h1 class="font-bold text-gray-800">
+            <h1 class="font-bold text-gray-800 text-sm">
                 Dashboard
             </h1>
 
-            <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-700">
+            <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-700 text-xs">
                 {{ strtoupper(substr(Auth::user()->name,0,1)) }}
             </div>
         </header>
 
-        <!-- Mobile Sidebar -->
+        <!-- Mobile Sidebar Overlay -->
         <div x-show="open"
             x-transition
             class="fixed inset-0 z-50 md:hidden">
@@ -204,53 +245,66 @@
                 @click="open = false"></div>
 
             <aside class="relative w-72 h-full bg-white shadow-xl flex flex-col">
-
                 <div class="p-6 border-b">
                     <h2 class="text-xl font-bold text-gray-800">
                         Bank Sampah RW.04
                     </h2>
-
                     <p class="text-sm text-gray-500">
                         Sistem Dashboard
                     </p>
                 </div>
 
-                <div class="p-4 space-y-2">
-
+                <div class="p-4 space-y-1.5 flex-1 overflow-y-auto">
+                    @if(in_array(Auth::user()->role, ['nasabah', 'orang_tua']))
                     <a href="{{ route('dashboard') }}"
-                        class="flex items-center gap-3 px-4 py-3 rounded-xl bg-indigo-600 text-white">
-
+                        class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-indigo-600 text-white font-medium text-xs">
                         Dashboard
                     </a>
+                    @endif
 
-                    <!-- Menu Khusus Admin (Mobile) -->
                     @if(Auth::user()->role == 'admin')
-                    <a href="{{ route('jenis-sampah.index') }}"
-                        class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100 text-gray-700">
+                    <div x-data="{ mobileNasabahOpen: {{ request()->routeIs('admin.nasabah.*') ? 'true' : 'false' }} }">
+                        <button @click="mobileNasabahOpen = !mobileNasabahOpen"
+                            class="w-full flex items-center justify-between px-4 py-3 rounded-2xl hover:bg-gray-100 text-gray-700 text-xs font-medium">
+                            <span>Kelola Data Nasabah</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-200" :class="mobileNasabahOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
 
-                        Input Jenis Sampah
+                        <div x-show="mobileNasabahOpen" x-transition class="pl-4 py-1 space-y-1 mt-1 border-l-2 border-indigo-100 ml-4">
+                            <a href="{{ route('admin.nasabah.index') }}"
+                                class="block px-3.5 py-2.5 rounded-xl text-xs font-medium {{ request()->routeIs('admin.nasabah.index') ? 'text-indigo-700 bg-indigo-50 font-semibold' : 'text-gray-600 hover:bg-gray-100' }}">
+                                Semua Nasabah
+                            </a>
+                            <a href="{{ route('admin.nasabah.rekening') }}"
+                                class="block px-3.5 py-2.5 rounded-xl text-xs font-medium {{ request()->routeIs('admin.nasabah.rekening') ? 'text-indigo-700 bg-indigo-50 font-semibold' : 'text-gray-600 hover:bg-gray-100' }}">
+                                Pengajuan Rekening
+                            </a>
+                        </div>
+                    </div>
+
+                    <a href="{{ route('jenis-sampah.index') }}"
+                        class="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-gray-100 text-gray-700 text-xs font-medium">
+                        Kelola Jenis & Harga Sampah
                     </a>
                     @endif
 
                     <a href="{{ route('profile.edit') }}"
-                        class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100 text-gray-700">
-
+                        class="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-gray-100 text-gray-700 text-xs font-medium">
                         Profile
                     </a>
 
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-
                         <button type="submit"
-                            class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 text-red-600">
-
+                            class="w-full text-left flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-red-50 text-red-600 text-xs font-medium">
                             Logout
                         </button>
                     </form>
-
                 </div>
             </aside>
         </div>
 
-        <!-- Content -->
-        <main class="flex-1 overflow-y-auto"></main>
+    </div>
+</nav>
