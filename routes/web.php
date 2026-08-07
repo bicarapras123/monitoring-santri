@@ -1,5 +1,4 @@
 <?php
-
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\JenisSampahController;
@@ -11,6 +10,7 @@ use App\Http\Controllers\AdminNasabahController;
 use App\Http\Controllers\SetoranSampahController;
 use App\Http\Controllers\AdminTransaksiController;
 use App\Http\Controllers\PencairanController;
+use App\Http\Controllers\PenarikanController;
 use App\Models\JenisSampah;
 use Illuminate\Http\Request;
 
@@ -30,10 +30,10 @@ Route::get('/', function (Request $request) {
     return view('welcome', compact('jenisSampahs', 'kategoriAktif', 'keyword'));
 });
 
-// 2. Halaman Informasi menggunakan InformationController & view 'information'
+// 2. Halaman Informasi
 Route::get('/information', [InformationController::class, 'index'])->name('information');
 
-// 3. Halaman Dashboard (Dipindahkan ke DashboardController)
+// 3. Halaman Dashboard
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
@@ -43,18 +43,28 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
     Route::post('/nasabah', [NasabahController::class, 'store'])->name('nasabah.store');
     Route::post('/rekening', [RekeningNasabahController::class, 'store'])->name('rekening.store');
     Route::get('/rekening', [RekeningNasabahController::class, 'create'])->name('rekening.store');
+    
     Route::get('/admin/nasabah', [AdminNasabahController::class, 'index'])->name('admin.nasabah.index');
     Route::get('/admin/nasabah/rekening', [AdminNasabahController::class, 'rekeningAjuan'])->name('admin.nasabah.rekening');
+    Route::patch('/admin/nasabah/rekening/{id}/verify', [AdminNasabahController::class, 'verifyRekening'])->name('admin.nasabah.verify');
+
     Route::get('/setoran-sampah/create', [SetoranSampahController::class, 'create'])->name('setoran.create');
-    Route::get('/admin/transaksi', [AdminTransaksiController::class, 'index'])->name('admin.transaksi.index');
     Route::post('/setoran-sampah', [SetoranSampahController::class, 'store'])->name('setoran.store');
+    
+    // --- KELOLA TRANSAKSI NASABAH (AdminTransaksiController) ---
+    Route::get('/admin/transaksi', [AdminTransaksiController::class, 'index'])->name('admin.transaksi.index');
+
+    // --- PENGAJUAN SALDO / PENARIKAN (PenarikanController) ---
+    Route::get('/admin/transaksi/pengajuan-saldo', [PenarikanController::class, 'index'])->name('admin.transaksi.penarikan');
+    Route::post('/admin/transaksi/pengajuan-saldo/upload-bukti/{id}', [PenarikanController::class, 'uploadBukti'])->name('admin.transaksi.upload-bukti');
+    Route::patch('/admin/transaksi/status/{id}', [PenarikanController::class, 'updateStatus'])->name('admin.transaksi.update-status');
+
     Route::post('/penarikan-saldo', [DashboardController::class, 'storePenarikan'])->name('penarikan.store');
     Route::get('/nasabah/cetak-cash', [PencairanController::class, 'cetakCash'])->name('pencairan.cash.cetak');
-    // TAMBAHKAN ROUTE VERIFIKASI INI:
-    Route::patch('/admin/nasabah/rekening/{id}/verify', [AdminNasabahController::class, 'verifyRekening'])->name('admin.nasabah.verify');
 
     Route::resource('jenis-sampah', JenisSampahController::class);
 });

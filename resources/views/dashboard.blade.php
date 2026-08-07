@@ -15,23 +15,26 @@
                     </p>
                 </div>
                 
-                <div class="flex items-center gap-3 no-print">
-                    <!-- Tombol Buka Pop-Up Riwayat Penarikan -->
-                    <button @click="showModalRiwayat = true" class="inline-flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 font-semibold rounded-2xl text-xs md:text-sm shadow-sm transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                        </svg>
-                        Riwayat Penarikan
-                    </button>
+                <!-- Tombol Aksi hanya muncul jika user sudah terdaftar sebagai nasabah (!empty(Auth::user()->nasabah)) -->
+                @if(Auth::user()->nasabah)
+                    <div class="flex items-center gap-3 no-print">
+                        <!-- Tombol Buka Pop-Up Riwayat Penarikan -->
+                        <button @click="showModalRiwayat = true" class="inline-flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 font-semibold rounded-2xl text-xs md:text-sm shadow-sm transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                            </svg>
+                            Riwayat Transaksi
+                        </button>
 
-                    <!-- Tombol Cetak -->
-                    <button onclick="window.print()" class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-2xl text-xs md:text-sm shadow-sm transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                        </svg>
-                        Cetak Dashboard
-                    </button>
-                </div>
+                        <!-- Tombol Cetak (Hanya tampil ketika tab 'info' aktif, disembunyikan saat tab 'cash' aktif) -->
+                        <button x-show="activeTab === 'info'" onclick="window.print()" class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-2xl text-xs md:text-sm shadow-sm transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                            </svg>
+                            Cetak Dashboard
+                        </button>
+                    </div>
+                @endif
             </div>
 
             <!-- Notification Alert Success/Error -->
@@ -275,6 +278,13 @@
                                     </div>
                                 </div>
                             @else
+                                <!-- Teks panduan tambahan jika belum daftar rekening agar user tidak bingung -->
+                                <div class="mb-4 bg-blue-50 border-l-4 border-blue-400 p-4 rounded-2xl">
+                                    <p class="text-xs text-blue-800 leading-relaxed font-medium">
+                                        Anda belum mendaftarkan akun rekening atau e-wallet. Silakan isi formulir di bawah ini terlebih dahulu agar Anda dapat mengajukan penarikan saldo tabungan secara online.
+                                    </p>
+                                </div>
+
                                 <!-- Form input jika belum ada rekening -->
                                 <form action="{{ route('rekening.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4 pt-2">
                                     @csrf
@@ -351,13 +361,24 @@
                                 </div>
 
                                 <div>
-                                    <label class="block text-xs font-semibold text-gray-700 mb-1">Metode Pencairan</label>
-                                    <select name="metode_pencairan" required
-                                        class="w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm px-3.5 py-2 border bg-white text-xs">
-                                        <option value="">Pilih Metode</option>
-                                        <option value="Transfer E-Wallet">Transfer ke E-Wallet Terdaftar</option>
-                                    </select>
-                                </div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Metode Pencairan</label>
+                                <select name="metode_pencairan" required
+                                    class="w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm px-3.5 py-2 border bg-white text-xs">
+                                    <option value="">Pilih Metode</option>
+                                    
+                                    @if(Auth::user()->nasabah && Auth::user()->nasabah->rekening)
+                                        @php
+                                            $rek = Auth::user()->nasabah->rekening;
+                                        @endphp
+                                        {{-- Nilai yang dikirim ke database hanya nama e-walletnya saja (contoh: 'DANA') --}}
+                                        <option value="{{ $rek->jenis_ewallet }}">
+                                            Transfer ke {{ $rek->jenis_ewallet }}
+                                        </option>
+                                    @else
+                                        <option value="" disabled>Belum ada rekening/e-wallet terdaftar</option>
+                                    @endif
+                                </select>
+                            </div>
 
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-700 mb-1">Upload PDF Bukti Cetak Dashboard</label>
@@ -439,17 +460,17 @@
                                                     <span class="font-bold text-gray-800 text-sm">Rp {{ number_format($item->jumlah_penarikan, 0, ',', '.') }}</span>
                                                 </div>
                                                 <p class="text-xs text-gray-500 mt-1">
-                                                    Metode: {{ $item->metode_pencairan }} &bull; Tanggal: {{ $item->created_at->format('d M Y, H:i') }}
+                                                    Saldo Awal: <strong class="text-gray-700">Rp {{ number_format(($item->jumlah_penarikan + ($totalTabungan ?? 0)), 0, ',', '.') }}</strong> &bull; Metode: {{ $item->metode_pencairan }} &bull; Tanggal: <span class="font-semibold text-indigo-600">{{ $item->updated_at > $item->created_at ? $item->updated_at->format('d M Y, H:i') : $item->created_at->format('d M Y, H:i') }}</span>
                                                 </p>
                                             </div>
 
-                                            @if($item->bukti_pdf)
-                                                <a href="{{ asset('storage/' . $item->bukti_pdf) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl text-xs font-semibold transition">
+                                            @if($item->bukti_pencairan)
+                                                <a href="{{ asset('uploads/bukti_pencairan/' . $item->bukti_pencairan) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl text-xs font-semibold transition">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                                     </svg>
-                                                    Lihat Bukti PDF
+                                                    Lihat Bukti Pembayaran
                                                 </a>
                                             @endif
                                         </div>

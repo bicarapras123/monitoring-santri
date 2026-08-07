@@ -182,25 +182,36 @@
                 </a>
             </div>
 
-            <!-- MENU: Kelola Transaksi Nasabah (Terhubung ke route admin.transaksi.index) -->
-            <div>
-                <a href="{{ route('admin.transaksi.index') }}" 
-                   class="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-700 hover:bg-gray-100 transition {{ request()->routeIs('admin.transaksi.*') ? 'bg-indigo-50 text-indigo-700 font-semibold' : '' }}">
+<!-- MENU: Kelola Transaksi Nasabah -->
+<div x-data="{ transaksiOpen: {{ request()->routeIs('admin.transaksi.*') ? 'true' : 'false' }} }" class="space-y-1">
+    
+    <!-- Wrapper Utama (Flex agar Link dan Tombol Panah Berjajar) -->
+    <div class="w-full flex items-center justify-between px-4 py-3 rounded-2xl transition {{ request()->routeIs('admin.transaksi.*') ? 'bg-indigo-50/60 text-indigo-700 font-semibold' : 'text-gray-700 hover:bg-gray-100' }}">
+        
+        <!-- Bagian Kiri: Link yang Mengarah ke Halaman Kelola Transaksi -->
+        <a href="{{ route('admin.transaksi.index') }}" class="flex items-center gap-3 flex-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+            <span class="text-xs font-medium whitespace-nowrap">Kelola Transaksi Nasabah</span>
+        </a>
 
-                    <svg xmlns="http://www.w3.org/2000/svg" 
-                        class="h-5 w-5 flex-shrink-0" 
-                        fill="none" 
-                        viewBox="0 0 24 24" 
-                        stroke="currentColor">
-                        <path stroke-linecap="round" 
-                            stroke-linejoin="round" 
-                            stroke-width="2" 
-                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                    </svg>
+        <!-- Bagian Kanan: Tombol Panah Khusus untuk Dropdown -->
+        <button @click="transaksiOpen = !transaksiOpen" class="p-1 rounded-lg hover:bg-gray-200/60 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-200" :class="transaksiOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+        </button>
+    </div>
 
-                    <span class="text-xs font-medium whitespace-nowrap">Kelola Transaksi Nasabah</span>
-                </a>
-            </div>
+    <!-- Sub-Menu / Isi Dropdown (Pengajuan Saldo) -->
+    <div x-show="transaksiOpen" x-transition class="pl-4 pr-2 py-1.5 space-y-1 border-l-2 border-indigo-100 ml-4">
+        <a href="{{ route('admin.transaksi.penarikan') }}" 
+            class="block px-3.5 py-2.5 rounded-xl text-xs font-medium transition {{ request()->routeIs('admin.transaksi.penarikan') ? 'text-indigo-700 bg-indigo-50 font-semibold' : 'text-gray-600 hover:bg-gray-100' }}">
+            Pengajuan Saldo
+        </a>
+    </div>
+</div>
             @endif
         </div>
 
@@ -334,10 +345,29 @@
                         Kelola Data Setoran Sampah
                     </a>
 
-                    <a href="{{ route('admin.transaksi.index') }}"
-                        class="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-gray-100 text-gray-700 text-xs font-medium {{ request()->routeIs('admin.transaksi.*') ? 'bg-indigo-50 text-indigo-700 font-semibold' : '' }}">
-                        Kelola Transaksi Nasabah
-                    </a>
+                    <!-- Mobile Dropdown Kelola Transaksi Nasabah -->
+<div x-data="{ mobileTransaksiOpen: {{ request()->routeIs('admin.transaksi.*') ? 'true' : 'false' }} }" class="space-y-1">
+    
+    <div class="w-full flex items-center justify-between px-4 py-3 rounded-2xl hover:bg-gray-100 text-gray-700 text-xs font-medium">
+        <!-- Link Halaman Utama -->
+        <a href="{{ route('admin.transaksi.index') }}" class="flex-1">
+            <span>Kelola Transaksi Nasabah</span>
+        </a>
+        <!-- Tombol Panah Dropdown -->
+        <button @click="mobileTransaksiOpen = !mobileTransaksiOpen" class="p-1 rounded-lg hover:bg-gray-200/60 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-200" :class="mobileTransaksiOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+        </button>
+    </div>
+
+    <div x-show="mobileTransaksiOpen" x-transition class="pl-4 py-1 space-y-1 border-l-2 border-indigo-100 ml-4">
+        <a href="{{ route('admin.transaksi.penarikan') }}"
+            class="block px-3.5 py-2.5 rounded-xl text-xs font-medium {{ request()->routeIs('admin.transaksi.penarikan') ? 'text-indigo-700 bg-indigo-50 font-semibold' : 'text-gray-600 hover:bg-gray-100' }}">
+            Pengajuan Saldo
+        </a>
+    </div>
+</div>
                     @endif
 
                     <a href="{{ route('profile.edit') }}"

@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="py-12" x-data="{ openModal: false, selectedNasabah: '', riwayatData: {} }">
+    <div class="py-12" x-data="{ openModal: false, selectedNasabah: '', selectedSaldo: 0, riwayatData: {} }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
@@ -35,6 +35,16 @@
                             </thead>
                             <tbody class="divide-y divide-gray-200 bg-white text-gray-600">
                                 @forelse($nasabahs as $index => $nasabah)
+                                @php
+                                    // Hitung total penarikan yang berstatus pending/disetujui secara real-time untuk nasabah ini
+                                    $penarikanNasabah = \App\Models\Penarikan::where('user_id', $nasabah->user_id ?? $nasabah->id)
+                                        ->whereIn('status', ['pending', 'disetujui'])
+                                        ->sum('jumlah_penarikan');
+                                    
+                                    // Saldo bersih secara real-time
+                                    $saldoRealtime = ($nasabah->total_keseluruhan_tabungan ?? 0) - $penarikanNasabah;
+                                    if ($saldoRealtime < 0) { $saldoRealtime = 0; }
+                                @endphp
                                 <tr class="hover:bg-gray-50/50 transition">
                                     <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ $nasabahs->firstItem() + $index }}</td>
                                     <td class="px-6 py-4 font-semibold text-gray-900 text-sm whitespace-nowrap">{{ $nasabah->nama_lengkap }}</td>
@@ -44,10 +54,10 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-800">{{ $nasabah->akumulasi_berat }} Kg</td>
                                     <td class="px-6 py-4 whitespace-nowrap font-bold text-emerald-600 text-sm">
-                                        Rp {{ number_format($nasabah->total_keseluruhan_tabungan ?? 0, 0, ',', '.') }}
+                                        Rp {{ number_format($saldoRealtime, 0, ',', '.') }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <button @click="openModal = true; selectedNasabah = '{{ $nasabah->nama_lengkap }}'; riwayatData = {{ json_encode($semuaSetoran[$nasabah->nama_lengkap] ?? []) }}" 
+                                        <button @click="openModal = true; selectedNasabah = '{{ $nasabah->nama_lengkap }}'; selectedSaldo = {{ $saldoRealtime }}; riwayatData = {{ json_encode($semuaSetoran[$nasabah->nama_lengkap] ?? []) }}" 
                                             class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-xl hover:bg-indigo-600 hover:text-white transition font-medium shadow-sm">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -99,11 +109,11 @@
                             <tr>
                                 <th class="px-4 py-3 font-semibold">Jenis Sampah</th>
                                 <th class="px-4 py-3 font-semibold">Berat</th>
-                                <th class="px-4 py-3 font-semibold">Tabungan (Rp)</th>
+                                <th class="px-4 py-3 font-semibold">Tabungan Real-Time (Rp)</th>
                                 <th class="px-4 py-3 font-semibold">Alamat</th>
                                 <th class="px-4 py-3 font-semibold">Metode Pencairan</th>
                                 <th class="px-4 py-3 font-semibold">No. Rekening</th>
-                                <th class="px-4 py-3 font-semibold">Status</th>
+                                <th class="px-4 py-3 font-semibold text-center">Status</th>
                                 <th class="px-4 py-3 font-semibold">Tanggal Setor</th>
                             </tr>
                         </thead>
@@ -112,22 +122,29 @@
                                 <tr>
                                     <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap" x-text="item.jenis_sampah"></td>
                                     <td class="px-4 py-3 font-semibold whitespace-nowrap" x-text="item.total_berat + ' Kg'"></td>
-                                    <td class="px-4 py-3 font-bold text-emerald-600 whitespace-nowrap" x-text="'Rp ' + Number(item.total_tabungan || 0).toLocaleString('id-ID')"></td>
+                                    
+                                    <!-- Menampilkan nominal saldo real-time (bisa diubah sesuai kebutuhan, misal menampilkan sisa saldo real-time nasabah) -->
+                                    <td class="px-4 py-3 font-bold text-emerald-600 whitespace-nowrap" x-text="'Rp ' + Number(selectedSaldo).toLocaleString('id-ID')"></td>
+
                                     <td class="px-4 py-3 max-w-xs truncate" :title="item.alamat_lengkap" x-text="item.alamat_lengkap ?? '-' "></td>
                                     <td class="px-4 py-3 whitespace-nowrap">
                                         <span class="px-2 py-0.5 bg-gray-100 rounded font-medium text-gray-700" x-text="item.jenis_rekening ?? 'Cash / Tunai'"></span>
                                     </td>
                                     <td class="px-4 py-3 whitespace-nowrap" x-text="item.nomor_rekening ?? '-' "></td>
-                                    <td class="px-4 py-3 whitespace-nowrap">
+                                    
+                                    <!-- Status (Diambil langsung dari tabel penarikans) -->
+                                    <td class="px-4 py-3 whitespace-nowrap text-center">
                                         <span class="px-2.5 py-1 text-xs font-semibold rounded-full"
                                             :class="{
-                                                'bg-amber-100 text-amber-700': item.status === 'pending',
-                                                'bg-emerald-100 text-emerald-700': item.status === 'selesai' || item.status === 'approved',
-                                                'bg-gray-100 text-gray-700': item.status !== 'pending' && item.status !== 'selesai' && item.status !== 'approved'
+                                                'bg-amber-100 text-amber-700': item.status_penarikan === 'pending',
+                                                'bg-emerald-100 text-emerald-700': ['disetujui', 'selesai', 'approved'].includes(item.status_penarikan),
+                                                'bg-red-100 text-red-700': item.status_penarikan === 'ditolak',
+                                                'bg-gray-100 text-gray-700': !['pending', 'disetujui', 'selesai', 'approved', 'ditolak'].includes(item.status_penarikan)
                                             }" 
-                                            x-text="item.status.charAt(0).toUpperCase() + item.status.slice(1)">
+                                            x-text="item.status_penarikan ? (item.status_penarikan.charAt(0).toUpperCase() + item.status_penarikan.slice(1)) : 'Pending'">
                                         </span>
                                     </td>
+
                                     <td class="px-4 py-3 whitespace-nowrap" x-text="new Date(item.created_at).toLocaleString('id-ID', {dateStyle: 'medium', timeStyle: 'short'})"></td>
                                 </tr>
                             </template>
