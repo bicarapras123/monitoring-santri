@@ -9,15 +9,27 @@ use Illuminate\Support\Facades\Storage;
 
 class SetoranSampahController extends Controller
 {
-    // Menampilkan form setoran sampah untuk nasabah
+    // Fungsi privat untuk memblokir akses jika bukan admin
+    private function authorizeAdmin()
+    {
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
+            abort(403, 'Akses ditolak. Anda tidak memiliki izin sebagai Admin.');
+        }
+    }
+
+    // Menampilkan form setoran sampah
     public function create()
     {
+        $this->authorizeAdmin(); // Cek keamanan akses admin
+
         return view('nasabah.setoran.create');
     }
 
     // Menyimpan data setoran sampah ke database
     public function store(Request $request)
     {
+        $this->authorizeAdmin(); // Cek keamanan akses admin
+
         $request->validate([
             'nama_lengkap' => 'required|string|max:255',
             'alamat_lengkap' => 'required|string',
@@ -47,6 +59,6 @@ class SetoranSampahController extends Controller
             'status' => 'pending',
         ]);
 
-        return redirect()->back()->with('success', 'Pengajuan setoran sampah berhasil dikirim dan menunggu konfirmasi admin!');
+        return redirect()->back()->with('success', 'Pengajuan setoran sampah berhasil disimpan!');
     }
 }

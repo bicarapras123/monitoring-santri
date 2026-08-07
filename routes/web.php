@@ -11,6 +11,7 @@ use App\Http\Controllers\SetoranSampahController;
 use App\Http\Controllers\AdminTransaksiController;
 use App\Http\Controllers\PencairanController;
 use App\Http\Controllers\PenarikanController;
+use App\Http\Controllers\LaporanController;
 use App\Models\JenisSampah;
 use Illuminate\Http\Request;
 
@@ -67,6 +68,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/nasabah/cetak-cash', [PencairanController::class, 'cetakCash'])->name('pencairan.cash.cetak');
 
     Route::resource('jenis-sampah', JenisSampahController::class);
+
+    // Route untuk Kelola Laporan
+    Route::get('/admin/laporan', [LaporanController::class, 'index'])->name('admin.laporan.index');
+    Route::get('/admin/laporan/pdf', [LaporanController::class, 'exportPdf'])->name('admin.laporan.pdf');
+    Route::get('/admin/laporan/excel', [LaporanController::class, 'exportExcel'])->name('admin.laporan.excel');
+    
 });
 
 require __DIR__.'/auth.php';

@@ -7,11 +7,22 @@ use App\Models\SetoranSampah;
 use App\Models\Penarikan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth; // Pastikan Facade Auth di-import
 
 class AdminTransaksiController extends Controller
 {
+    // Fungsi privat untuk memblokir akses jika bukan admin
+    private function authorizeAdmin()
+    {
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
+            abort(403, 'Akses ditolak. Anda tidak memiliki izin sebagai Admin.');
+        }
+    }
+
     public function index(Request $request)
     {
+        $this->authorizeAdmin(); // Cek keamanan akses admin
+
         $search = $request->input('search');
 
         // 1. Mengambil rekap data yang Dikelompokkan per Nasabah untuk Tabel Utama

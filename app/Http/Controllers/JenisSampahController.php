@@ -4,40 +4,54 @@ namespace App\Http\Controllers;
 
 use App\Models\JenisSampah;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage; // <-- Tambahkan ini untuk mengelola file
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth; // <-- Tambahkan import Auth
 
 class JenisSampahController extends Controller
 {
+    // Fungsi privat untuk memblokir akses jika bukan admin
+    private function authorizeAdmin()
+    {
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
+            abort(403, 'Akses ditolak. Anda tidak memiliki izin sebagai Admin.');
+        }
+    }
+
     public function index()
     {
+        $this->authorizeAdmin();
+
         $jenisSampahs = JenisSampah::latest()->get();
         return view('jenis-sampah.index', compact('jenisSampahs'));
     }
 
     public function store(Request $request)
     {
+        $this->authorizeAdmin();
+
         $request->validate([
             'nama_sampah'  => 'required|string|max:255',
             'kategori'     => 'required|string|max:100',
             'harga_kg'     => 'required|numeric|min:0',
             'deskripsi'    => 'nullable|string',
-            'upload_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // <-- Tambahan validasi gambar
+            'upload_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // <-- Tambahan logika upload gambar
         $data = $request->all();
         if ($request->hasFile('upload_image')) {
             $imagePath = $request->file('upload_image')->store('jenis-sampah', 'public');
             $data['upload_image'] = $imagePath;
         }
 
-        JenisSampah::create($data); // Menggunakan $data yang sudah disisipkan path gambar
+        JenisSampah::create($data);
 
         return redirect()->route('jenis-sampah.index')->with('success', 'Jenis sampah berhasil ditambahkan!');
     }
 
     public function edit($id)
     {
+        $this->authorizeAdmin();
+
         $jenisSampahs = JenisSampah::latest()->get();
         $editData = JenisSampah::findOrFail($id);
         
@@ -46,24 +60,23 @@ class JenisSampahController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorizeAdmin();
+
         $request->validate([
             'nama_sampah'  => 'required|string|max:255',
             'kategori'     => 'required|string|max:100',
             'harga_kg'     => 'required|numeric|min:0',
             'deskripsi'    => 'nullable|string',
-            'upload_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // <-- Tambahan validasi gambar
+            'upload_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $jenisSampah = JenisSampah::findOrFail($id);
         $data = $request->all();
 
-        // <-- Tambahan logika update & ganti gambar baru
         if ($request->hasFile('upload_image')) {
-            // Hapus gambar lama jika ada
             if ($jenisSampah->upload_image && Storage::disk('public')->exists($jenisSampah->upload_image)) {
                 Storage::disk('public')->delete($jenisSampah->upload_image);
             }
-            // Simpan gambar baru
             $data['upload_image'] = $request->file('upload_image')->store('jenis-sampah', 'public');
         }
 
@@ -74,9 +87,10 @@ class JenisSampahController extends Controller
 
     public function destroy($id)
     {
+        $this->authorizeAdmin();
+
         $jenisSampah = JenisSampah::findOrFail($id);
 
-        // <-- Tambahan logika hapus file gambar dari storage saat data dihapus
         if ($jenisSampah->upload_image && Storage::disk('public')->exists($jenisSampah->upload_image)) {
             Storage::disk('public')->delete($jenisSampah->upload_image);
         }
