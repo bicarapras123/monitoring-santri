@@ -205,11 +205,16 @@
                     </button>
                 </div>
 
-                <!-- Sub-Menu / Isi Dropdown (Pengajuan Saldo) -->
+                <!-- Sub-Menu / Isi Dropdown (Pengajuan Saldo & Pengajuan Cardless) -->
                 <div x-show="transaksiOpen" x-transition class="pl-4 pr-2 py-1.5 space-y-1 border-l-2 border-indigo-100 ml-4">
                     <a href="{{ route('admin.transaksi.penarikan') }}" 
                         class="block px-3.5 py-2.5 rounded-xl text-xs font-medium transition {{ request()->routeIs('admin.transaksi.penarikan') ? 'text-indigo-700 bg-indigo-50 font-semibold' : 'text-gray-600 hover:bg-gray-100' }}">
                         Pengajuan Saldo
+                    </a>
+                    <!-- Submenu Baru: Pengajuan Cardless -->
+                    <a href="{{ route('admin.transaksi.cardless') }}"
+                        class="block px-3.5 py-2.5 rounded-xl text-xs font-medium transition text-gray-600 hover:bg-gray-100">
+                        Pengajuan Cardless
                     </a>
                 </div>
             </div>
@@ -379,6 +384,11 @@
                             <a href="{{ route('admin.transaksi.penarikan') }}"
                                 class="block px-3.5 py-2.5 rounded-xl text-xs font-medium {{ request()->routeIs('admin.transaksi.penarikan') ? 'text-indigo-700 bg-indigo-50 font-semibold' : 'text-gray-600 hover:bg-gray-100' }}">
                                 Pengajuan Saldo
+                            </a>
+                            <!-- Submenu Baru Mobile: Pengajuan Cardless -->
+                            <a href="{{ route('admin.transaksi.cardless') }}"
+                                class="block px-3.5 py-2.5 rounded-xl text-xs font-medium text-gray-600 hover:bg-gray-100">
+                                Pengajuan Cardless
                             </a>
                         </div>
                     </div>

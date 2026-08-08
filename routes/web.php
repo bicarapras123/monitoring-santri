@@ -12,6 +12,7 @@ use App\Http\Controllers\AdminTransaksiController;
 use App\Http\Controllers\PencairanController;
 use App\Http\Controllers\PenarikanController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\Admin\CardlessController;
 use App\Models\JenisSampah;
 use Illuminate\Http\Request;
 
@@ -74,6 +75,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/laporan/pdf', [LaporanController::class, 'exportPdf'])->name('admin.laporan.pdf');
     Route::get('/admin/laporan/excel', [LaporanController::class, 'exportExcel'])->name('admin.laporan.excel');
     
+    Route::get('/transaksi/cardless', [CardlessController::class, 'index'])->name('admin.transaksi.cardless');
+    Route::post('/transaksi/cardless/parse', [CardlessController::class, 'parsePdf'])->name('admin.transaksi.cardless.parse');
+
 });
 
 require __DIR__.'/auth.php';
