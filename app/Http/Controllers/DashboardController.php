@@ -35,12 +35,12 @@ class DashboardController extends Controller
             $totalTabungan = 0;
         }
 
-        // 4. Mengambil semua riwayat penarikan milik user yang sedang login (terbaru di atas)
+        // 4. Mengambil riwayat penarikan (mencakup reguler dan cash) dari tabel penarikans
         $riwayatPenarikan = Penarikan::where('user_id', $user->id)->latest()->get();
 
         return view('dashboard', compact('totalSetoran', 'totalTabungan', 'riwayatPenarikan'));
     }
-
+    
     // Method untuk menyimpan pengajuan penarikan saldo dari form dashboard
     public function storePenarikan(Request $request)
     {

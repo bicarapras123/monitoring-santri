@@ -380,12 +380,12 @@
                                 </select>
                             </div>
 
-                                <div>
-                                    <label class="block text-xs font-semibold text-gray-700 mb-1">Upload PDF Bukti Cetak Dashboard</label>
-                                    <input type="file" name="bukti_pdf" accept="application/pdf" required
-                                        class="w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 border border-gray-300 rounded-xl bg-white">
-                                    <p class="text-[11px] text-gray-400 mt-1">Format file harus .pdf sebagai barang bukti saldo Anda.</p>
-                                </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Upload Bukti PDF</label>
+                                <input type="file" name="bukti_pdf" accept="application/pdf" required
+                                    class="w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 border border-gray-300 rounded-xl bg-white">
+                                <p class="text-[11px] text-gray-400 mt-1">Cetak dashboard, simpan sebagai PDF, lalu unggah di sini sebagai bukti saldo.</p>
+                            </div>
 
                                 <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-xs transition shadow-sm">
                                     Ajukan Penarikan Saldo
@@ -464,8 +464,24 @@
                                                 </p>
                                             </div>
 
-                                            @if($item->bukti_pencairan)
-                                                <a href="{{ asset('uploads/bukti_pencairan/' . $item->bukti_pencairan) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl text-xs font-semibold transition">
+                                            {{-- Pengecekan File Bukti: Mendukung file_path (Cardless/Cash) maupun bukti_pencairan/bukti_pdf (Reguler) --}}
+                                            @php
+                                                $pathFile = $item->file_path ?? $item->bukti_pdf ?? $item->bukti_pencairan;
+                                                
+                                                // Tentukan URL file berdasarkan penyimpanannya
+                                                $urlFile = '';
+                                                if ($pathFile) {
+                                                    if (str_contains($pathFile, 'cardless_forms/') || str_contains($pathFile, 'bukti_penarikan/')) {
+                                                        $urlFile = asset('storage/' . $pathFile);
+                                                    } else {
+                                                        // Fallback jika berada di folder uploads publik lama
+                                                        $urlFile = asset('uploads/bukti_pencairan/' . $pathFile);
+                                                    }
+                                                }
+                                            @endphp
+
+                                            @if($pathFile)
+                                                <a href="{{ $urlFile }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl text-xs font-semibold transition">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />

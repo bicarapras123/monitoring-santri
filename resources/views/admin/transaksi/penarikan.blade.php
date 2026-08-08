@@ -208,57 +208,63 @@
                         </div>
                     </div>
 
-                    <!-- Konten Detail -->
-                    <div class="space-y-3 text-xs text-gray-700">
-                        <div class="flex justify-between border-b border-gray-50 pb-2">
-                            <span class="text-gray-400">Waktu Cetak / Cetak Data</span>
-                            <span class="font-semibold text-indigo-600" x-text="currentTime"></span>
-                        </div>
-                        <div class="flex justify-between border-b border-gray-50 pb-2">
-                            <span class="text-gray-400">Nama Lengkap</span>
-                            <span class="font-semibold text-gray-900" x-text="selectedPenarikan.nama_lengkap ?? '-'"></span>
-                        </div>
-                        <div class="flex justify-between border-b border-gray-50 pb-2">
-                            <span class="text-gray-400">Email</span>
-                            <span class="font-medium text-indigo-600" x-text="selectedPenarikan.user?.email ?? '-'"></span>
-                        </div>
-                        <div class="flex justify-between border-b border-gray-50 pb-2">
-                            <span class="text-gray-400">No. Telepon</span>
-                            <span class="font-medium text-gray-800" x-text="selectedPenarikan.nomor_telephone ?? '-'"></span>
-                        </div>
-                        <div class="flex justify-between border-b border-gray-50 pb-2">
-                            <span class="text-gray-400">Alamat Lengkap</span>
-                            <span class="font-medium text-gray-800 text-right max-w-xs truncate" x-text="selectedPenarikan.alamat_lengkap ?? '-'"></span>
-                        </div>
-                        <div class="flex justify-between border-b border-gray-50 pb-2">
-                            <span class="text-gray-400">Nomor Rekening</span>
-                            <span class="font-semibold text-gray-800" x-text="selectedPenarikan.nomor_rekening ?? '-'"></span>
-                        </div>
-                        <div class="flex justify-between border-b border-gray-50 pb-2">
-                            <span class="text-gray-400">Jenis E-Wallet / Bank</span>
-                            <span class="font-medium text-gray-800" x-text="selectedPenarikan.jenis_ewallet ?? 'Tunai'"></span>
-                        </div>
-                        <div class="flex justify-between border-b border-gray-50 pb-2">
-                            <span class="text-gray-400">Total Berat Sampah</span>
-                            <span class="font-semibold text-gray-800" x-text="(selectedPenarikan.total_berat ?? '0') + ' Kg'"></span>
-                        </div>
-                        <div class="flex justify-between border-b border-gray-50 pb-2">
-                            <span class="text-gray-400">Jumlah Penarikan</span>
-                            <span class="font-bold text-emerald-600 text-sm" x-text="'Rp ' + Number(selectedPenarikan.jumlah_penarikan ?? 0).toLocaleString('id-ID')"></span>
-                        </div>
-                        <div class="flex justify-between items-center pt-1">
-                            <span class="text-gray-400">Status Penarikan</span>
-                            <span class="px-2.5 py-1 text-xs font-semibold rounded-full"
-                                :class="{
-                                    'bg-amber-100 text-amber-700': selectedPenarikan.status === 'pending',
-                                    'bg-emerald-100 text-emerald-700': selectedPenarikan.status === 'disetujui',
-                                    'bg-red-100 text-red-700': selectedPenarikan.status === 'ditolak'
-                                }"
-                                x-text="selectedPenarikan.status ? (selectedPenarikan.status.charAt(0).toUpperCase() + selectedPenarikan.status.slice(1)) : 'Pending'">
-                            </span>
-                        </div>
-                    </div>
-                </div>
+ <!-- Konten Detail -->
+<div class="space-y-3 text-xs text-gray-700">
+    <div class="flex justify-between border-b border-gray-50 pb-2">
+        <span class="text-gray-400">Waktu Cetak / Cetak Data</span>
+        <span class="font-semibold text-indigo-600" x-text="currentTime"></span>
+    </div>
+    <div class="flex justify-between border-b border-gray-50 pb-2">
+        <span class="text-gray-400">Nama Lengkap</span>
+        <span class="font-semibold text-gray-900" x-text="selectedPenarikan.nama_lengkap ?? '-'"></span>
+    </div>
+    <div class="flex justify-between border-b border-gray-50 pb-2">
+        <span class="text-gray-400">Email</span>
+        <span class="font-medium text-indigo-600" x-text="selectedPenarikan.user?.email ?? '-'"></span>
+    </div>
+    
+    <!-- BARU: Penambahan Metode Pencairan -->
+    <div class="flex justify-between border-b border-gray-50 pb-2">
+        <span class="text-gray-400">Metode Pencairan</span>
+        <span class="font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded" x-text="selectedPenarikan.metode_pencairan ?? '-'"></span>
+    </div>
+
+    <div class="flex justify-between border-b border-gray-50 pb-2">
+        <span class="text-gray-400">No. Telepon</span>
+        <span class="font-medium text-gray-800" x-text="selectedPenarikan.nomor_telephone ?? '-'"></span>
+    </div>
+    <div class="flex justify-between border-b border-gray-50 pb-2">
+        <span class="text-gray-400">Alamat Lengkap</span>
+        <span class="font-medium text-gray-800 text-right max-w-xs truncate" x-text="selectedPenarikan.alamat_lengkap ?? '-'"></span>
+    </div>
+    <div class="flex justify-between border-b border-gray-50 pb-2">
+        <span class="text-gray-400">Nomor Rekening / E-Wallet</span>
+        <span class="font-semibold text-gray-800" x-text="selectedPenarikan.nomor_rekening ?? '-'"></span>
+    </div>
+    <div class="flex justify-between border-b border-gray-50 pb-2">
+        <span class="text-gray-400">Jenis E-Wallet / Bank</span>
+        <span class="font-medium text-gray-800" x-text="selectedPenarikan.jenis_ewallet ?? 'Tunai'"></span>
+    </div>
+    <div class="flex justify-between border-b border-gray-50 pb-2">
+        <span class="text-gray-400">Total Berat Sampah</span>
+        <span class="font-semibold text-gray-800" x-text="(selectedPenarikan.total_berat ?? '0') + ' Kg'"></span>
+    </div>
+    <div class="flex justify-between border-b border-gray-50 pb-2">
+        <span class="text-gray-400">Jumlah Penarikan</span>
+        <span class="font-bold text-emerald-600 text-sm" x-text="'Rp ' + Number(selectedPenarikan.jumlah_penarikan ?? 0).toLocaleString('id-ID')"></span>
+    </div>
+    <div class="flex justify-between items-center pt-1">
+        <span class="text-gray-400">Status Penarikan</span>
+        <span class="px-2.5 py-1 text-xs font-semibold rounded-full"
+            :class="{
+                'bg-amber-100 text-amber-700': selectedPenarikan.status === 'pending',
+                'bg-emerald-100 text-emerald-700': selectedPenarikan.status === 'disetujui',
+                'bg-red-100 text-red-700': selectedPenarikan.status === 'ditolak'
+            }"
+            x-text="selectedPenarikan.status ? (selectedPenarikan.status.charAt(0).toUpperCase() + selectedPenarikan.status.slice(1)) : 'Pending'">
+        </span>
+    </div>
+</div>
 
                 <!-- Footer Modal & Tombol Print -->
                 <div class="mt-6 flex justify-between items-center">

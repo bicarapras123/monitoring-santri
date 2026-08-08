@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Laporan Resmi - Penarikan Saldo Bank Sampah</title>
     <style>
-        body { font-family: 'Times New Roman', serif; font-size: 13px; color: #000; line-height: 1.6; margin: 40px; }
+        body { font-family: 'Calibri', serif; font-size: 13px; color: #000; line-height: 1.6; margin: 40px; }
         .header { text-align: center; border-bottom: 3px double #000; padding-bottom: 10px; margin-bottom: 20px; }
         .header h1 { margin: 0; font-size: 22px; text-transform: uppercase; }
         .content-info { margin-bottom: 25px; }
@@ -45,11 +45,11 @@
             Melalui dokumen ini, pengurus Bank Sampah RW.04 menyampaikan laporan komprehensif mengenai realisasi penarikan saldo oleh nasabah. 
             Laporan ini disusun berdasarkan data transaksi yang tercatat dalam sistem internal kami untuk periode yang telah ditentukan di atas. 
             Adapun total penarikan yang berhasil diproses pada periode ini mencapai <strong>Rp {{ number_format($totalNilaiPenarikan, 0, ',', '.') }}</strong> 
-            yang mencakup seluruh metode pencairan meliputi Transfer Bank dan E-Wallet.
+            yang mencakup seluruh metode pencairan meliputi Transfer E-Wallet & Penarikan Cardless (Cash).
         </p>
 
         <p class="paragraph">
-            Berikut adalah rincian data transaksi penarikan saldo secara detail:
+            Berikut adalah rincian data transaksi penarikan saldo secara detail beserta total akumulasi berat sampah tiap nasabah:
         </p>
     </div>
 
@@ -59,6 +59,7 @@
                 <th>No</th>
                 <th>Tanggal</th>
                 <th>Nama Nasabah</th>
+                <th>Total Berat (Kg)</th> <!-- Tambahan -->
                 <th>Metode</th>
                 <th>Nominal (Rp)</th>
                 <th>Status</th>
@@ -70,19 +71,23 @@
                 <td class="text-center">{{ $loop->iteration }}</td>
                 <td>{{ $item->created_at ? $item->created_at->format('d/m/Y') : '-' }}</td>
                 <td>{{ $item->user->nasabah->nama_lengkap ?? $item->user->name ?? '-' }}</td>
+                <!-- Data berat sampah -->
+                <td class="text-center">
+                    {{ number_format($item->user->nasabah->setoranSampah->sum('total_berat') ?? 0, 1, ',', '.') }} Kg
+                </td>
                 <td>{{ $item->metode_pencairan ?? '-' }}</td>
                 <td class="text-right">Rp {{ number_format($item->jumlah_penarikan ?? 0, 0, ',', '.') }}</td>
                 <td class="text-center">{{ ucfirst($item->status) }}</td>
             </tr>
             @empty
             <tr>
-                <td colspan="6" style="text-align: center;">Tidak ada transaksi pada periode ini.</td>
+                <td colspan="7" style="text-align: center;">Tidak ada transaksi pada periode ini.</td>
             </tr>
             @endforelse
         </tbody>
         <tfoot>
             <tr>
-                <th colspan="4" class="text-right">TOTAL NILAI PENARIKAN</th>
+                <th colspan="5" class="text-right">TOTAL NILAI PENARIKAN</th>
                 <th class="text-right">Rp {{ number_format($totalNilaiPenarikan, 0, ',', '.') }}</th>
                 <th></th>
             </tr>

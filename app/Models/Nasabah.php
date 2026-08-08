@@ -20,4 +20,11 @@ class Nasabah extends Model
     return $this->hasOne(RekeningNasabah::class, 'nasabah_id');
 }
 
+public function setoranSampah()
+    {
+        // Asumsi: Nasabah terhubung ke setoran lewat 'nama_lengkap' atau 'user_id'
+        // Karena di gambar Anda kolomnya adalah 'nama_lengkap', gunakan ini:
+        return $this->hasMany(SetoranSampah::class, 'nama_lengkap', 'nama_lengkap');
+    }
+
 }

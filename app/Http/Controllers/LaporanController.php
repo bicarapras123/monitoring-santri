@@ -65,6 +65,9 @@ class LaporanController extends Controller
         $totalBeratSampah = $setoranQuery->sum('total_berat');
         $totalFrekuensiSetoran = $setoranQuery->count();
 
+        // Data untuk tabel Riwayat Setoran (baru ditambahkan)
+        $riwayatSetoran = $setoranQuery->latest()->get();
+
         $topNasabah = SetoranSampah::select('nama_lengkap', DB::raw('SUM(total_berat) as total_berat'), DB::raw('COUNT(*) as total_transaksi'))
             ->groupBy('nama_lengkap')
             ->orderByDesc('total_berat')
@@ -86,6 +89,7 @@ class LaporanController extends Controller
 
         return view('admin.laporan.index', compact(
             'riwayatTransaksi',
+            'riwayatSetoran',
             'totalNilaiPenarikan',
             'totalPenarikanDisetujui',
             'totalPenarikanPending',
