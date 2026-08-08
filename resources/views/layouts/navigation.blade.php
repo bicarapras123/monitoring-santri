@@ -232,6 +232,19 @@
                 </a>
             </div>
             @endif
+
+            <!-- MENU TAMBAHAN UNTUK RW (Tanpa Error Route) -->
+            @if(Auth::user()->role == 'rw')
+            <div>
+                <a href="{{ route('rw.laporan.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-2xl text-emerald-700 bg-emerald-50 font-semibold transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    <span class="text-xs font-medium whitespace-nowrap">Dashboard Laporan RW</span>
+                </a>
+            </div>
+            @endif
         </div>
 
         <!-- Bottom -->
@@ -399,7 +412,14 @@
                         Kelola Laporan
                     </a>
                     @endif
-                    
+
+                    <!-- MENU TAMBAHAN UNTUK RW (Mobile) -->
+                    @if(Auth::user()->role == 'rw')
+                    <a href="{{ route('rw.laporan.index') }}"
+                        class="flex items-center gap-3 px-4 py-3 rounded-2xl text-emerald-700 bg-emerald-50 font-semibold text-xs">
+                        Dashboard Laporan RW
+                    </a>
+                    @endif
 
                     <a href="{{ route('profile.edit') }}"
                         class="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-gray-100 text-gray-700 text-xs font-medium">

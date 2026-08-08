@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Penarikan;
 use App\Models\SetoranSampah;
+use App\Models\LaporanEksternal;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth; // <-- Pastikan Auth di-import
@@ -197,4 +198,25 @@ class LaporanController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
+
+    public function upload(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'tujuan' => 'required',
+            'jenis_laporan' => 'required'
+        ]);
+    
+        $path = $request->file('file')->store('laporan_eksternal', 'public');
+    
+        LaporanEksternal::create([
+            'jenis_laporan' => $request->jenis_laporan,
+            'tujuan' => $request->tujuan,
+            'file_path' => $path
+        ]);
+    
+        // Mengirimkan notifikasi sukses
+        return back()->with('success', 'Laporan ' . $request->jenis_laporan . ' berhasil diunggah ke ' . $request->tujuan . '!');
+    }
+
 }
