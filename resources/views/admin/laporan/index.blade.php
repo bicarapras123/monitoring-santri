@@ -147,7 +147,7 @@
                 </div>
 
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-                    <p class="text-xs text-gray-400 font-medium">Total Pengajuan</p>
+                    <p class="text-xs text-gray-400 font-medium">Total Pengajuan Saldo</p>
                     <h4 class="text-base font-bold text-gray-900 mt-1">{{ $jumlahTotalTransaksi ?? 0 }} Transaksi</h4>
                     <div class="mt-2 text-[11px] text-gray-500 flex gap-2">
                         <span class="bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded">Sukses: {{ $jumlahDisetujui ?? 0 }}</span>

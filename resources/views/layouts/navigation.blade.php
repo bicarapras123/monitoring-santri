@@ -233,15 +233,36 @@
             </div>
             @endif
 
-            <!-- MENU TAMBAHAN UNTUK RW (Tanpa Error Route) -->
+            <!-- MENU TAMBAHAN UNTUK RW (Desktop) -->
             @if(Auth::user()->role == 'rw')
-            <div>
+            <div class="space-y-1">
                 <a href="{{ route('rw.laporan.index') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-2xl text-emerald-700 bg-emerald-50 font-semibold transition">
+                    class="flex items-center gap-3 px-4 py-3 rounded-2xl transition {{ request()->routeIs('rw.laporan.*') ? 'bg-emerald-100 text-emerald-800 font-bold' : 'text-emerald-700 bg-emerald-50 font-semibold' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                     </svg>
-                    <span class="text-xs font-medium whitespace-nowrap">Dashboard Laporan RW</span>
+                    <span class="text-xs font-medium whitespace-nowrap">Dashboard Laporan</span>
+                </a>
+
+                <a href="{{ route('rw.kelolaporan.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-2xl transition {{ request()->routeIs('rw.kelolaporan.*') ? 'bg-emerald-100 text-emerald-800 font-bold' : 'text-gray-700 hover:bg-gray-100' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                    </svg>
+                    <span class="text-xs font-medium whitespace-nowrap">Kelola Laporan Sampah Warga</span>
+                </a>
+            </div>
+            @endif
+
+            <!-- MENU KHUSUS BANK SAMPAH INDUK (Desktop) -->
+            @if(Auth::user()->role == 'bank_sampah_induk')
+            <div class="space-y-1">
+                <a href="{{ route('bsi.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-2xl transition {{ request()->routeIs('bsi.index') ? 'bg-purple-100 text-purple-800 font-bold' : 'text-purple-700 bg-purple-50 font-semibold' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                    </svg>
+                    <span class="text-xs font-medium whitespace-nowrap">Dashboard Induk</span>
                 </a>
             </div>
             @endif
@@ -381,11 +402,9 @@
                     <div x-data="{ mobileTransaksiOpen: {{ request()->routeIs('admin.transaksi.*') ? 'true' : 'false' }} }" class="space-y-1">
                         
                         <div class="w-full flex items-center justify-between px-4 py-3 rounded-2xl hover:bg-gray-100 text-gray-700 text-xs font-medium">
-                            <!-- Link Halaman Utama -->
                             <a href="{{ route('admin.transaksi.index') }}" class="flex-1">
                                 <span>Kelola Transaksi Nasabah</span>
                             </a>
-                            <!-- Tombol Panah Dropdown -->
                             <button @click="mobileTransaksiOpen = !mobileTransaksiOpen" class="p-1 rounded-lg hover:bg-gray-200/60 transition">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-200" :class="mobileTransaksiOpen ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -398,7 +417,6 @@
                                 class="block px-3.5 py-2.5 rounded-xl text-xs font-medium {{ request()->routeIs('admin.transaksi.penarikan') ? 'text-indigo-700 bg-indigo-50 font-semibold' : 'text-gray-600 hover:bg-gray-100' }}">
                                 Pengajuan Saldo
                             </a>
-                            <!-- Submenu Baru Mobile: Pengajuan Cardless -->
                             <a href="{{ route('admin.transaksi.cardless') }}"
                                 class="block px-3.5 py-2.5 rounded-xl text-xs font-medium text-gray-600 hover:bg-gray-100">
                                 Pengajuan Cardless
@@ -406,7 +424,6 @@
                         </div>
                     </div>
 
-                    <!-- MENU BARU: Kelola Laporan (Mobile) -->
                     <a href="{{ route('admin.laporan.index') }}"
                         class="flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-medium {{ request()->routeIs('admin.laporan.*') ? 'text-indigo-700 bg-indigo-50 font-semibold text-gray-700' : 'hover:bg-gray-100 text-gray-700' }}">
                         Kelola Laporan
@@ -415,10 +432,26 @@
 
                     <!-- MENU TAMBAHAN UNTUK RW (Mobile) -->
                     @if(Auth::user()->role == 'rw')
-                    <a href="{{ route('rw.laporan.index') }}"
-                        class="flex items-center gap-3 px-4 py-3 rounded-2xl text-emerald-700 bg-emerald-50 font-semibold text-xs">
-                        Dashboard Laporan RW
-                    </a>
+                    <div class="space-y-1">
+                        <a href="{{ route('rw.laporan.index') }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-2xl transition text-xs {{ request()->routeIs('rw.laporan.*') ? 'bg-emerald-100 text-emerald-800 font-bold' : 'text-emerald-700 bg-emerald-50 font-semibold' }}">
+                            Dashboard Laporan
+                        </a>
+                        <a href="{{ route('rw.kelolaporan.index') }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-2xl transition text-xs {{ request()->routeIs('rw.kelolaporan.*') ? 'bg-emerald-100 text-emerald-800 font-bold' : 'text-gray-700 hover:bg-gray-100 font-medium' }}">
+                            Kelola Laporan Sampah Warga
+                        </a>
+                    </div>
+                    @endif
+
+                    <!-- MENU KHUSUS BANK SAMPAH INDUK (Mobile) -->
+                    @if(Auth::user()->role == 'bank_sampah_induk')
+                    <div class="space-y-1">
+                        <a href="{{ route('bsi.index') }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-2xl transition text-xs {{ request()->routeIs('bsi.index') ? 'bg-purple-100 text-purple-800 font-bold' : 'text-purple-700 bg-purple-50 font-semibold' }}">
+                            Dashboard Induk
+                        </a>
+                    </div>
                     @endif
 
                     <a href="{{ route('profile.edit') }}"

@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\JenisSampahController;
@@ -14,6 +15,8 @@ use App\Http\Controllers\PenarikanController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\Admin\CardlessController;
 use App\Http\Controllers\RwController;
+use App\Http\Controllers\RwLaporanController;
+use App\Http\Controllers\BankSampahIndukController;
 use App\Models\JenisSampah;
 use Illuminate\Http\Request;
 
@@ -81,7 +84,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/transaksi/cardless/parse', [CardlessController::class, 'parsePdf'])->name('admin.transaksi.cardless.parse');
 
     Route::get('/rw/laporan', [RwController::class, 'index'])->name('rw.laporan.index');
+    Route::get('/rw/laporan/pdf', [RwController::class, 'cetakPdf'])->name('rw.laporan.pdf');
 
+    // Tambahkan di sini:
+    Route::get('/rw/kelola-laporan', [RwLaporanController::class, 'index'])->name('rw.kelolaporan.index');
+    Route::get('/rw/kelola-laporan/tambah', [RwLaporanController::class, 'create'])->name('rw.kelolaporan.create');
+    Route::post('/rw/kelola-laporan', [RwLaporanController::class, 'store'])->name('rw.kelolaporan.store');
+
+    Route::get('/bank-sampah-induk', [BankSampahIndukController::class, 'index'])->name('bsi.index');
 });
 
 require __DIR__.'/auth.php';
