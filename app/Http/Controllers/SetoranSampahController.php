@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\SetoranSampah;
+use App\Models\Nasabah;
+use App\Models\JenisSampah;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class SetoranSampahController extends Controller
 {
-    // Fungsi privat untuk memblokir akses jika bukan admin
     private function authorizeAdmin()
     {
         if (!Auth::check() || Auth::user()->role !== 'admin') {
@@ -17,48 +18,70 @@ class SetoranSampahController extends Controller
         }
     }
 
-    // Menampilkan form setoran sampah
+    // Menampilkan form setoran sampah dengan mengirim data dari controller
     public function create()
     {
-        $this->authorizeAdmin(); // Cek keamanan akses admin
-
-        return view('nasabah.setoran.create');
+        $this->authorizeAdmin(); 
+    
+        // Ubah 'rekeningNasabahs' menjadi 'rekening'
+        $nasabahs = Nasabah::with('rekening')->get(); 
+        $jenisSampahs = JenisSampah::all();
+    
+        return view('nasabah.setoran.create', compact('nasabahs', 'jenisSampahs'));
     }
 
     // Menyimpan data setoran sampah ke database
     public function store(Request $request)
     {
-        $this->authorizeAdmin(); // Cek keamanan akses admin
-
+        $this->authorizeAdmin();
+    
         $request->validate([
-            'nama_lengkap' => 'required|string|max:255',
-            'alamat_lengkap' => 'required|string',
-            'nomor_telephone' => 'required|string|max:20',
-            'nomor_rekening' => 'nullable|string|max:50',
-            'jenis_rekening' => 'nullable|string|max:50',
-            'jenis_sampah' => 'required|string|max:100',
-            'foto_sampah' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'total_berat' => 'required|numeric|min:0.01',
+            'nasabah_id' => 'required|exists:nasabahs,id',
+            'tanggal_setoran' => 'required|date', // <-- Tambahkan validasi tanggal
+            'jenis_rekening' => 'required',
+            'nomor_rekening' => 'nullable',
+            'foto_sampah' => 'required|image|max:2048',
+            'sampah' => 'required|array',
+            'sampah.*.jenis_sampah_id' => 'required|exists:jenis_sampah,id',
+            'sampah.*.berat' => 'required|numeric|min:0.01',
         ]);
-
-        $path = null;
-        if ($request->hasFile('foto_sampah')) {
-            $path = $request->file('foto_sampah')->store('foto-sampah', 'public');
+    
+        $nasabah = Nasabah::findOrFail($request->nasabah_id);
+    
+        // 1. Hitung total berat dan rangkum nama jenis sampah dari input multi-item
+        $totalBerat = 0;
+        $arrJenisSampah = [];
+    
+        foreach ($request->sampah as $item) {
+            $totalBerat += floatval($item['berat']);
+            
+            // Ambil nama jenis sampah berdasarkan ID jika diperlukan untuk disimpan ke teks
+            $jenisSampahObj = \App\Models\JenisSampah::find($item['jenis_sampah_id']);
+            if ($jenisSampahObj) {
+                $arrJenisSampah[] = $jenisSampahObj->nama_sampah . ' (' . $item['berat'] . ' Kg)';
+            }
         }
-
+    
+        $stringJenisSampah = implode(', ', $arrJenisSampah);
+    
+        // 2. Upload foto
+        $fotoPath = $request->file('foto_sampah')->store('foto-sampah', 'public');
+    
+        // 3. Simpan ke database dengan nilai yang valid
         SetoranSampah::create([
-            'user_id' => Auth::id(),
-            'nama_lengkap' => $request->nama_lengkap,
-            'alamat_lengkap' => $request->alamat_lengkap,
-            'nomor_telephone' => $request->nomor_telephone,
-            'nomor_rekening' => $request->nomor_rekening,
+            'user_id' => auth()->id(),
+            'tanggal_setoran' => $request->tanggal_setoran, // <-- Simpan tanggal dari inputan form
+            'nama_lengkap' => $nasabah->nama_lengkap,
+            'alamat_lengkap' => $nasabah->alamat_lengkap,
+            'nomor_telephone' => $nasabah->nomor_telepon,
             'jenis_rekening' => $request->jenis_rekening,
-            'jenis_sampah' => $request->jenis_sampah,
-            'foto_sampah' => $path,
-            'total_berat' => $request->total_berat,
+            'nomor_rekening' => $request->nomor_rekening,
+            'jenis_sampah' => $stringJenisSampah, // Tersimpan rapi berupa teks rangkumannya
+            'total_berat' => $totalBerat,         // Berupa angka desimal yang valid (contoh: 14.00)
+            'foto_sampah' => $fotoPath,
             'status' => 'pending',
         ]);
-
-        return redirect()->back()->with('success', 'Pengajuan setoran sampah berhasil disimpan!');
+    
+        return redirect()->route('setoran.create')->with('success', 'Pengajuan setoran sampah berhasil dikirim!');
     }
 }

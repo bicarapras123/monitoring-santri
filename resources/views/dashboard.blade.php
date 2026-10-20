@@ -319,11 +319,22 @@
                         </div>
                     </div>
 
-                    <!-- Kolom Kanan: Cek Saldo & Form / Peringatan Tarik Saldo -->
-                    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 h-fit">
-                        <div class="border-b border-gray-100 pb-4 mb-4">
-                            <h3 class="text-base font-bold text-gray-800">Tarik Saldo Tabungan</h3>
-                            <p class="text-xs text-gray-500 mt-0.5">Ajukan pencairan dana tabungan sampah Anda.</p>
+<!-- Kolom Kanan: Cek Saldo & Form / Peringatan Tarik Saldo -->
+<div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 h-fit">
+                        <div class="border-b border-gray-100 pb-4 mb-4 flex justify-between items-center">
+                            <div>
+                                <h3 class="text-base font-bold text-gray-800">Tarik Saldo Tabungan</h3>
+                                <p class="text-xs text-gray-500 mt-0.5">Ajukan pencairan dana tabungan sampah Anda.</p>
+                            </div>
+                            <!-- Tanggal Pengajuan Real-time -->
+                            <div class="text-right">
+                                <span class="inline-flex items-center gap-1 text-[11px] font-semibold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-xl">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    {{ now()->format('d M Y') }}
+                                </span>
+                            </div>
                         </div>
 
                         <div class="bg-emerald-50 border border-emerald-100 rounded-2xl p-4 mb-5 text-center">
@@ -353,6 +364,15 @@
                             <!-- Form Tarik Saldo (Muncul Jika Saldo > 50.000) -->
                             <form action="{{ route('penarikan.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                                 @csrf
+                                
+                                <!-- Input Tanggal Pengajuan (Hidden / Opsional Ditampilkan) -->
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 mb-1">Tanggal Pengajuan</label>
+                                    <input type="text" value="{{ now()->format('d F Y') }}" disabled
+                                        class="w-full rounded-xl border-gray-200 bg-gray-50 text-gray-500 shadow-sm px-3.5 py-2 border text-xs cursor-not-allowed">
+                                    <input type="hidden" name="tanggal_penarikan" value="{{ now()->format('Y-m-d') }}">
+                                </div>
+
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-700 mb-1">Jumlah Penarikan (Rp)</label>
                                     <input type="number" name="jumlah_penarikan" placeholder="Contoh: 50000" min="1" max="{{ $totalTabungan - 50000 }}" required
@@ -361,31 +381,30 @@
                                 </div>
 
                                 <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">Metode Pencairan</label>
-                                <select name="metode_pencairan" required
-                                    class="w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm px-3.5 py-2 border bg-white text-xs">
-                                    <option value="">Pilih Metode</option>
-                                    
-                                    @if(Auth::user()->nasabah && Auth::user()->nasabah->rekening)
-                                        @php
-                                            $rek = Auth::user()->nasabah->rekening;
-                                        @endphp
-                                        {{-- Nilai yang dikirim ke database hanya nama e-walletnya saja (contoh: 'DANA') --}}
-                                        <option value="{{ $rek->jenis_ewallet }}">
-                                            Transfer ke {{ $rek->jenis_ewallet }}
-                                        </option>
-                                    @else
-                                        <option value="" disabled>Belum ada rekening/e-wallet terdaftar</option>
-                                    @endif
-                                </select>
-                            </div>
+                                    <label class="block text-xs font-semibold text-gray-700 mb-1">Metode Pencairan</label>
+                                    <select name="metode_pencairan" required
+                                        class="w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm px-3.5 py-2 border bg-white text-xs">
+                                        <option value="">Pilih Metode</option>
+                                        
+                                        @if(Auth::user()->nasabah && Auth::user()->nasabah->rekening)
+                                            @php
+                                                $rek = Auth::user()->nasabah->rekening;
+                                            @endphp
+                                            <option value="{{ $rek->jenis_ewallet }}">
+                                                Transfer ke {{ $rek->jenis_ewallet }}
+                                            </option>
+                                        @else
+                                            <option value="" disabled>Belum ada rekening/e-wallet terdaftar</option>
+                                        @endif
+                                    </select>
+                                </div>
 
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">Upload Bukti PDF</label>
-                                <input type="file" name="bukti_pdf" accept="application/pdf" required
-                                    class="w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 border border-gray-300 rounded-xl bg-white">
-                                <p class="text-[11px] text-gray-400 mt-1">Cetak dashboard, simpan sebagai PDF, lalu unggah di sini sebagai bukti saldo.</p>
-                            </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 mb-1">Upload Bukti PDF</label>
+                                    <input type="file" name="bukti_pdf" accept="application/pdf" required
+                                        class="w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 border border-gray-300 rounded-xl bg-white">
+                                    <p class="text-[11px] text-gray-400 mt-1">Cetak dashboard, simpan sebagai PDF, lalu unggah di sini sebagai bukti saldo.</p>
+                                </div>
 
                                 <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-xs transition shadow-sm">
                                     Ajukan Penarikan Saldo
@@ -393,7 +412,7 @@
                             </form>
                         @endif
                     </div>
-                </div>
+                    </div>
 
                 <!-- SECTION 2: Pencairan Dana Cash (Tunai) -->
                 <div x-show="activeTab === 'cash'" class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8 mb-12" style="display: none;">
@@ -432,88 +451,151 @@
                     </form>
                 </div>
 
-                <!-- MODAL POP-UP RIWAYAT PENARIKAN -->
-                <div x-show="showModalRiwayat" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-                    <div @click.away="showModalRiwayat = false" class="bg-white rounded-3xl shadow-xl max-w-3xl w-full p-6 md:p-8 overflow-hidden transform transition-all">
+        <!-- MODAL POP-UP RIWAYAT PENARIKAN -->
+        <div x-show="showModalRiwayat" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+            <div @click.away="showModalRiwayat = false" class="bg-white rounded-3xl shadow-xl max-w-3xl w-full p-6 md:p-8 overflow-hidden transform transition-all">
+                
+                <!-- Header Modal -->
+                <div class="flex justify-between items-center pb-4 border-b border-gray-100 mb-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-800">Semua Riwayat Transaksi Penarikan</h3>
+                        <p class="text-xs text-gray-500 mt-0.5">Daftar lengkap riwayat pengajuan penarikan dana Anda.</p>
+                    </div>
+                    <button @click="showModalRiwayat = false" class="h-8 w-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-600 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+        <!-- Content Tabel Riwayat (Bergaya Sistem Perbankan / E-Wallet Modern) -->
+        <div class="max-h-[60vh] overflow-y-auto pr-1 space-y-3">
+            @if(isset($riwayatPenarikan) && $riwayatPenarikan->count() > 0)
+                @foreach($riwayatPenarikan as $item)
+                    @php
+                        // Tentukan warna dan label berdasarkan status transaksi di database
+                        $status = strtolower($item->status ?? 'disetujui');
                         
-                        <!-- Header Modal -->
-                        <div class="flex justify-between items-center pb-4 border-b border-gray-100 mb-6">
-                            <div>
-                                <h3 class="text-lg font-bold text-gray-800">Semua Riwayat Transaksi Penarikan</h3>
-                                <p class="text-xs text-gray-500 mt-0.5">Daftar lengkap riwayat pengajuan penarikan dana Anda.</p>
+                        // Konfigurasi badge status ala perbankan
+                        $statusClass = 'bg-gray-100 text-gray-700 border-gray-200';
+                        $statusText = ucfirst($item->status ?? 'Berhasil');
+                        $dotColor = 'bg-gray-400';
+
+                        if (str_contains($status, 'disetujui') || str_contains($status, 'sukses') || str_contains($status, 'completed')) {
+                            $statusClass = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+                            $statusText = 'Berhasil';
+                            $dotColor = 'bg-emerald-500';
+                        } elseif (str_contains($status, 'pending') || str_contains($status, 'proses')) {
+                            $statusClass = 'bg-amber-50 text-amber-700 border-amber-200';
+                            $statusText = 'Diproses';
+                            $dotColor = 'bg-amber-500';
+                        } elseif (str_contains($status, 'tolak') || str_contains($status, 'gagal')) {
+                            $statusClass = 'bg-rose-50 text-rose-700 border-rose-200';
+                            $statusText = 'Ditolak';
+                            $dotColor = 'bg-rose-500';
+                        }
+
+                        // Path file bukti transfer dari admin
+                        $namaFile = $item->bukti_pencairan;
+                        $urlBukti = $namaFile ? asset('uploads/bukti_pencairan/' . $namaFile) : null;
+                    @endphp
+
+                    <!-- Card Item Transaksi -->
+                    <div class="p-4 rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition flex flex-col gap-3">
+                        
+                        <!-- Baris Atas: Jenis & Nominal -->
+                        <div class="flex justify-between items-start">
+                            <div class="flex items-center gap-3">
+                                <!-- Icon Status -->
+                                <div class="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-gray-800">Penarikan Saldo Tabungan</h4>
+                                    <p class="text-xs text-gray-400 mt-0.5">
+                                        Metode: <span class="font-medium text-gray-600">{{ $item->metode_pencairan }}</span>
+                                    </p>
+                                </div>
                             </div>
-                            <button @click="showModalRiwayat = false" class="h-8 w-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-600 transition">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
+
+                            <!-- Nominal Uang -->
+                            <div class="text-right">
+                                <span class="text-sm md:text-base font-extrabold text-rose-600">
+                                    - Rp {{ number_format($item->jumlah_penarikan, 0, ',', '.') }}
+                                </span>
+                            </div>
                         </div>
 
-                        <!-- Content Tabel Riwayat -->
-                        <div class="max-h-[60vh] overflow-y-auto pr-1">
-                            @if(isset($riwayatPenarikan) && $riwayatPenarikan->count() > 0)
-                                <div class="space-y-3">
-                                    @foreach($riwayatPenarikan as $item)
-                                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center p-4 rounded-2xl border border-gray-100 bg-gray-50/50 gap-3">
-                                            <div>
-                                                <div class="flex items-center gap-2">
-                                                    <span class="font-bold text-gray-800 text-sm">Rp {{ number_format($item->jumlah_penarikan, 0, ',', '.') }}</span>
-                                                </div>
-                                                <p class="text-xs text-gray-500 mt-1">
-                                                    Saldo Awal: <strong class="text-gray-700">Rp {{ number_format(($item->jumlah_penarikan + ($totalTabungan ?? 0)), 0, ',', '.') }}</strong> &bull; Metode: {{ $item->metode_pencairan }} &bull; Tanggal: <span class="font-semibold text-indigo-600">{{ $item->updated_at > $item->created_at ? $item->updated_at->format('d M Y, H:i') : $item->created_at->format('d M Y, H:i') }}</span>
-                                                </p>
-                                            </div>
+                        <!-- Garis Pemisah Tipis -->
+                        <div class="border-t border-gray-100 my-1"></div>
 
-                                            {{-- Pengecekan File Bukti: Mendukung file_path (Cardless/Cash) maupun bukti_pencairan/bukti_pdf (Reguler) --}}
-                                            @php
-                                                $pathFile = $item->file_path ?? $item->bukti_pdf ?? $item->bukti_pencairan;
-                                                
-                                                // Tentukan URL file berdasarkan penyimpanannya
-                                                $urlFile = '';
-                                                if ($pathFile) {
-                                                    if (str_contains($pathFile, 'cardless_forms/') || str_contains($pathFile, 'bukti_penarikan/')) {
-                                                        $urlFile = asset('storage/' . $pathFile);
-                                                    } else {
-                                                        // Fallback jika berada di folder uploads publik lama
-                                                        $urlFile = asset('uploads/bukti_pencairan/' . $pathFile);
-                                                    }
-                                                }
-                                            @endphp
+                        <!-- Baris Bawah: Rincian Waktu, Saldo Awal, Status & Tombol Bukti -->
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 text-xs">
+                            
+                            <!-- Informasi Rinci -->
+                            <div class="space-y-1 text-gray-500">
+                                <p>
+                                    Waktu Transaksi: <span class="font-semibold text-gray-700">{{ $item->created_at->format('d M Y, H:i') }} WIB</span>
+                                </p>
+                                <p>
+                                    Sisa Estimasi Saldo: <span class="font-semibold text-gray-700">Rp {{ number_format(($totalTabungan ?? 0), 0, ',', '.') }}</span>
+                                </p>
+                            </div>
 
-                                            @if($pathFile)
-                                                <a href="{{ $urlFile }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl text-xs font-semibold transition">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                    </svg>
-                                                    Lihat Bukti Pembayaran
-                                                </a>
-                                            @endif
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @else
-                                <div class="text-center py-12">
-                                    <div class="h-12 w-12 bg-gray-100 text-gray-400 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                            <!-- Status Badge & Tombol Lihat Bukti -->
+                            <div class="flex items-center gap-2 w-full md:w-auto justify-between md:justify-end">
+                                <!-- Badge Status -->
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border {{ $statusClass }}">
+                                    <span class="h-1.5 w-1.5 rounded-full {{ $dotColor }}"></span>
+                                    {{ $statusText }}
+                                </span>
+
+                                <!-- Tombol Bukti Transfer -->
+                                @if($urlBukti)
+                                    <a href="{{ $urlBukti }}" target="_blank" 
+                                    class="inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition shadow-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                         </svg>
-                                    </div>
-                                    <p class="text-sm font-semibold text-gray-600">Belum ada riwayat transaksi penarikan</p>
-                                    <p class="text-xs text-gray-400 mt-1">Semua riwayat pengajuan penarikan dana Anda akan muncul di sini.</p>
-                                </div>
-                            @endif
-                        </div>
+                                        Bukti Transaksi
+                                    </a>
+                                @else
+                                    <span class="text-gray-400 italic bg-gray-50 px-2.5 py-1 rounded-lg border border-gray-100">
+                                        Bukti belum diunggah
+                                    </span>
+                                @endif
+                            </div>
 
-                        <!-- Footer Modal -->
-                        <div class="flex justify-end pt-6 mt-6 border-t border-gray-100">
-                            <button @click="showModalRiwayat = false" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-2xl text-xs transition">
-                                Tutup
-                            </button>
                         </div>
 
                     </div>
+                @endforeach
+            @else
+                <!-- State Kosong / Belum Ada Transaksi -->
+                <div class="text-center py-12 bg-gray-50/50 rounded-2xl border border-dashed border-gray-200">
+                    <div class="h-12 w-12 bg-white text-gray-400 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm border border-gray-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                    </div>
+                    <p class="text-sm font-bold text-gray-700">Belum Ada Riwayat Transaksi</p>
+                    <p class="text-xs text-gray-400 mt-1 max-w-xs mx-auto">Semua catatan pengajuan penarikan dan bukti transfer dari admin akan tersusun rapi di sini.</p>
                 </div>
+            @endif
+        </div>
+
+                <!-- Footer Modal -->
+                <div class="flex justify-end pt-6 mt-6 border-t border-gray-100">
+                    <button @click="showModalRiwayat = false" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-2xl text-xs transition">
+                        Tutup
+                    </button>
+                </div>
+
+            </div>
+        </div>
 
             @endif
 

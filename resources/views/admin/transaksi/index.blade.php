@@ -11,7 +11,16 @@
                             <p class="text-xs text-gray-500">Klik tombol "Detail Riwayat" pada masing-masing nasabah untuk melihat rincian transaksi sampah.</p>
                         </div>
                         
-                        <div class="w-full md:w-auto">
+                        <!-- Bagian Aksi & Pencarian -->
+                        <div class="w-full md:w-auto flex items-center gap-2">
+                            <!-- Tombol Export Excel Detail -->
+                            <button type="button" id="btn-export-excel-detail" class="inline-flex items-center gap-1.5 bg-emerald-600 text-white text-xs px-4 py-2 rounded-xl hover:bg-emerald-700 transition shadow-sm cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                Export Excel
+                            </button>
+
                             <form method="GET" action="{{ route('admin.transaksi.index') }}" class="flex gap-2">
                                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama atau no. telepon..." class="text-xs border-gray-300 rounded-xl focus:border-indigo-500 focus:ring-indigo-500 w-full md:w-72">
                                 <button type="submit" class="bg-indigo-600 text-white text-xs px-4 py-2 rounded-xl hover:bg-indigo-700 transition">Cari</button>
@@ -19,9 +28,9 @@
                         </div>
                     </div>
 
-                    <!-- Tabel Ringkas & Simple -->
+                    <!-- AREA TABEL UTAMA -->
                     <div class="overflow-x-auto border border-gray-100 rounded-2xl">
-                        <table class="min-w-full divide-y divide-gray-200 text-left text-xs">
+                        <table id="tabel-laporan-nasabah" class="min-w-full divide-y divide-gray-200 text-left text-xs">
                             <thead class="bg-gray-50 text-gray-700 uppercase tracking-wider">
                                 <tr>
                                     <th class="px-6 py-3.5 font-semibold">No</th>
@@ -30,34 +39,30 @@
                                     <th class="px-6 py-3.5 font-semibold text-center">Total Setoran</th>
                                     <th class="px-6 py-3.5 font-semibold">Akumulasi Berat</th>
                                     <th class="px-6 py-3 font-semibold">Total Saldo Tabungan</th>
-                                    <th class="px-6 py-3.5 font-semibold text-center">Aksi</th>
+                                    <th class="px-6 py-3.5 font-semibold text-center exclude-excel">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200 bg-white text-gray-600">
-                                @forelse($nasabahs as $index => $nasabah)
+                                @forelse($nasabahs as $index =>$nasabah)
                                 @php
-                                    // Hitung total penarikan yang berstatus pending/disetujui secara real-time untuk nasabah ini
                                     $penarikanNasabah = \App\Models\Penarikan::where('user_id', $nasabah->user_id ?? $nasabah->id)
                                         ->whereIn('status', ['pending', 'disetujui'])
                                         ->sum('jumlah_penarikan');
                                     
-                                    // Saldo bersih secara real-time
                                     $saldoRealtime = ($nasabah->total_keseluruhan_tabungan ?? 0) - $penarikanNasabah;
-                                    if ($saldoRealtime < 0) { $saldoRealtime = 0; }
+                                    if ($saldoRealtime < 0) {$saldoRealtime = 0; }
                                 @endphp
-                                <tr class="hover:bg-gray-50/50 transition">
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ $nasabahs->firstItem() + $index }}</td>
+                                <tr class="hover:bg-gray-50/50 transition nasabah-row" data-riwayat="{{ json_encode($semuaSetoran[$nasabah->nama_lengkap] ?? []) }}">
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ $nasabahs->firstItem() +$index }}</td>
                                     <td class="px-6 py-4 font-semibold text-gray-900 text-sm whitespace-nowrap">{{ $nasabah->nama_lengkap }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-gray-600">{{ $nasabah->nomor_telephone }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-full font-semibold">{{ $nasabah->total_setoran }} Kali</span>
-                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">{{ $nasabah->total_setoran }} Kali</td>
                                     <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-800">{{ $nasabah->akumulasi_berat }} Kg</td>
                                     <td class="px-6 py-4 whitespace-nowrap font-bold text-emerald-600 text-sm">
                                         Rp {{ number_format($saldoRealtime, 0, ',', '.') }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <button @click="openModal = true; selectedNasabah = '{{ $nasabah->nama_lengkap }}'; selectedSaldo = {{ $saldoRealtime }}; riwayatData = {{ json_encode($semuaSetoran[$nasabah->nama_lengkap] ?? []) }}" 
+                                    <td class="px-6 py-4 whitespace-nowrap text-center exclude-excel">
+                                        <button @click="openModal = true; selectedNasabah = '{{ $nasabah->nama_lengkap }}'; selectedSaldo = {{$saldoRealtime }}; riwayatData = {{ json_encode($semuaSetoran[$nasabah->nama_lengkap] ?? []) }}" 
                                             class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-xl hover:bg-indigo-600 hover:text-white transition font-medium shadow-sm">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -122,17 +127,12 @@
                                 <tr>
                                     <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap" x-text="item.jenis_sampah"></td>
                                     <td class="px-4 py-3 font-semibold whitespace-nowrap" x-text="item.total_berat + ' Kg'"></td>
-                                    
-                                    <!-- Menampilkan nominal saldo real-time (bisa diubah sesuai kebutuhan, misal menampilkan sisa saldo real-time nasabah) -->
                                     <td class="px-4 py-3 font-bold text-emerald-600 whitespace-nowrap" x-text="'Rp ' + Number(selectedSaldo).toLocaleString('id-ID')"></td>
-
                                     <td class="px-4 py-3 max-w-xs truncate" :title="item.alamat_lengkap" x-text="item.alamat_lengkap ?? '-' "></td>
                                     <td class="px-4 py-3 whitespace-nowrap">
                                         <span class="px-2 py-0.5 bg-gray-100 rounded font-medium text-gray-700" x-text="item.jenis_rekening ?? 'Cash / Tunai'"></span>
                                     </td>
                                     <td class="px-4 py-3 whitespace-nowrap" x-text="item.nomor_rekening ?? '-' "></td>
-                                    
-                                    <!-- Status (Diambil langsung dari tabel penarikans) -->
                                     <td class="px-4 py-3 whitespace-nowrap text-center">
                                         <span class="px-2.5 py-1 text-xs font-semibold rounded-full"
                                             :class="{
@@ -144,7 +144,6 @@
                                             x-text="item.status_penarikan ? (item.status_penarikan.charAt(0).toUpperCase() + item.status_penarikan.slice(1)) : 'Pending'">
                                         </span>
                                     </td>
-
                                     <td class="px-4 py-3 whitespace-nowrap" x-text="new Date(item.created_at).toLocaleString('id-ID', {dateStyle: 'medium', timeStyle: 'short'})"></td>
                                 </tr>
                             </template>
@@ -161,4 +160,112 @@
         </div>
 
     </div>
+
+    <!-- Script JavaScript untuk Export Excel Detail -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const btnExport = document.getElementById('btn-export-excel-detail');
+            if (btnExport) {
+                btnExport.addEventListener('click', function () {
+                    let dataType = 'application/vnd.ms-excel';
+                    
+                    let excelHTML = `
+                        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+                        <head><meta charset="utf-8"></head>
+                        <body>
+                            <h2 style="text-align:center;">LAPORAN REKAPITULASI & RINCIAN TRANSAKSI NASABAH</h2>
+                            <p style="text-align:center;">Tanggal Export: ${new Date().toLocaleString('id-ID')}</p>
+                            <br>
+                            
+                            <h3>TABEL RINGKASAN NASABAH</h3>
+                            <table border="1">
+                                <tr style="background-color: #f2f2f2; font-weight: bold;">
+                                    <th>No</th>
+                                    <th>Nama Lengkap</th>
+                                    <th>No. Telepon</th>
+                                    <th>Total Setoran</th>
+                                    <th>Akumulasi Berat</th>
+                                    <th>Total Saldo Tabungan</th>
+                                </tr>
+                    `;
+
+                    const rows = document.querySelectorAll('.nasabah-row');
+                    let allDetailsHTML = "";
+
+                    rows.forEach((row) => {
+                        const cols = row.querySelectorAll('td');
+                        const no = cols[0].innerText.trim();
+                        const nama = cols[1].innerText.trim();
+                        const telepon = cols[2].innerText.trim();
+                        const totalSetoran = cols[3].innerText.trim();
+                        const akumulasiBerat = cols[4].innerText.trim();
+                        const saldo = cols[5].innerText.trim();
+
+                        excelHTML += `
+                            <tr>
+                                <td>${no}</td>
+                                <td>${nama}</td>
+                                <td>'${telepon}</td>
+                                <td>${totalSetoran}</td>
+                                <td>${akumulasiBerat}</td>
+                                <td>${saldo}</td>
+                            </tr>
+                        `;
+
+                        try {
+                            const rawRiwayat = row.getAttribute('data-riwayat');
+                            const riwayatList = JSON.parse(rawRiwayat);
+
+                            if (riwayatList && riwayatList.length > 0) {
+                                allDetailsHTML += `
+                                    <br>
+                                    <h3>RINCIAN TRANSAKSI: ${nama}</h3>
+                                    <table border="1">
+                                        <tr style="background-color: #e6f2ff; font-weight: bold;">
+                                            <th>Jenis Sampah</th>
+                                            <th>Berat</th>
+                                            <th>Alamat</th>
+                                            <th>Metode Pencairan</th>
+                                            <th>No. Rekening</th>
+                                            <th>Status</th>
+                                            <th>Tanggal Setor</th>
+                                        </tr>
+                                `;
+                                
+                                riwayatList.forEach(item => {
+                                    allDetailsHTML += `
+                                        <tr>
+                                            <td>${item.jenis_sampah ?? '-'}</td>
+                                            <td>${item.total_berat ?? 0} Kg</td>
+                                            <td>${item.alamat_lengkap ?? '-'}</td>
+                                            <td>${item.jenis_rekening ?? 'Cash / Tunai'}</td>
+                                            <td>'${item.nomor_rekening ?? '-'}</td>
+                                            <td>${item.status_penarikan ?? 'Pending'}</td>
+                                            <td>${new Date(item.created_at).toLocaleString('id-ID')}</td>
+                                        </tr>
+                                    `;
+                                });
+
+                                allDetailsHTML += `</table><br>`;
+                            }
+                        } catch (e) {
+                            console.error("Gagal parsing riwayat:", e);
+                        }
+                    });
+
+                    excelHTML += `</table><br><br>` + allDetailsHTML + `</body></html>`;
+
+                    let blob = new Blob(['\ufeff', excelHTML], { type: dataType });
+                    let filename = 'laporan-lengkap-nasabah-dan-rincian.xls';
+                    
+                    let downloadLink = document.createElement("a");
+                    downloadLink.href = URL.createObjectURL(blob);
+                    downloadLink.download = filename;
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    document.body.removeChild(downloadLink);
+                });
+            }
+        });
+    </script>
 </x-app-layout>

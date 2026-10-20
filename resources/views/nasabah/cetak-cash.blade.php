@@ -8,9 +8,18 @@
 </head>
 <body class="bg-white text-gray-800 p-8" onload="window.print()">
     <div class="max-w-2xl mx-auto border border-gray-300 p-8 rounded-2xl shadow-sm">
-        <div class="text-center border-b pb-4 mb-6">
-            <h1 class="text-xl font-bold uppercase">Formulir Pengajuan Pencairan Dana Cash</h1>
-            <p class="text-xs text-gray-500 mt-1">Bank Sampah RW.04</p>
+        
+        <!-- Header dengan Informasi Tanggal Real-time -->
+        <div class="flex justify-between items-start border-b pb-4 mb-6">
+            <div>
+                <h1 class="text-xl font-bold uppercase">Formulir Pengajuan Pencairan Dana Cash</h1>
+                <p class="text-xs text-gray-500 mt-1">Bank Sampah RW.04</p>
+            </div>
+            <div class="text-right">
+                <span class="text-xs font-semibold text-gray-600 bg-gray-100 px-3 py-1.5 rounded-xl border border-gray-200">
+                    Tanggal: {{ now()->format('d F Y') }}
+                </span>
+            </div>
         </div>
 
         <div class="space-y-3 text-sm mb-8">
@@ -54,7 +63,9 @@
                 <p class="font-bold underline">( .................................... )</p>
             </div>
             <div>
-                <p class="mb-16">Nasabah,</p>
+                <!-- Tambahan Lokasi dan Tanggal di bawah Tanda Tangan Nasabah (Opsional) -->
+                <p class="text-xs text-gray-500 mb-1">Jakarta, {{ now()->format('d F Y') }}</p>
+                <p class="mb-12">Nasabah,</p>
                 <p class="font-bold underline">( {{ $nasabah->nama_lengkap }} )</p>
             </div>
         </div>
