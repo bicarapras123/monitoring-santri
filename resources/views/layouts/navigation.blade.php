@@ -211,7 +211,6 @@
                         class="block px-3.5 py-2.5 rounded-xl text-xs font-medium transition {{ request()->routeIs('admin.transaksi.penarikan') ? 'text-indigo-700 bg-indigo-50 font-semibold' : 'text-gray-600 hover:bg-gray-100' }}">
                         Pengajuan Saldo
                     </a>
-                    <!-- Submenu Baru: Pengajuan Cardless -->
                     <a href="{{ route('admin.transaksi.cardless') }}"
                         class="block px-3.5 py-2.5 rounded-xl text-xs font-medium transition text-gray-600 hover:bg-gray-100">
                         Pengajuan Cardless
@@ -219,7 +218,7 @@
                 </div>
             </div>
 
-            <!-- MENU BARU: Kelola Laporan (Desktop) -->
+            <!-- MENU: Kelola Laporan (Desktop) -->
             <div>
                 <a href="{{ route('admin.laporan.index') }}" 
                     class="flex items-center gap-3 px-4 py-3 rounded-2xl transition {{ request()->routeIs('admin.laporan.*') ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-gray-700 hover:bg-gray-100' }}">
@@ -229,6 +228,19 @@
                     </svg>
 
                     <span class="text-xs font-medium whitespace-nowrap">Kelola Laporan</span>
+                </a>
+            </div>
+
+            <!-- MENU BARU: Kelola Berita (Desktop) -->
+            <div>
+                <a href="{{ route('berita.index') }}" 
+                    class="flex items-center gap-3 px-4 py-3 rounded-2xl transition {{ request()->routeIs('berita.*') ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-gray-700 hover:bg-gray-100' }}">
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+                    </svg>
+
+                    <span class="text-xs font-medium whitespace-nowrap">Kelola Berita</span>
                 </a>
             </div>
             @endif
@@ -427,6 +439,12 @@
                     <a href="{{ route('admin.laporan.index') }}"
                         class="flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-medium {{ request()->routeIs('admin.laporan.*') ? 'text-indigo-700 bg-indigo-50 font-semibold text-gray-700' : 'hover:bg-gray-100 text-gray-700' }}">
                         Kelola Laporan
+                    </a>
+
+                    <!-- Menu Kelola Berita Mobile -->
+                    <a href="{{ route('berita.index') }}"
+                        class="flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-medium {{ request()->routeIs('berita.*') ? 'text-indigo-700 bg-indigo-50 font-semibold text-gray-700' : 'hover:bg-gray-100 text-gray-700' }}">
+                        Kelola Berita
                     </a>
                     @endif
 

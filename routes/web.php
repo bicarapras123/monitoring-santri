@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\CardlessController;
 use App\Http\Controllers\RwController;
 use App\Http\Controllers\RwLaporanController;
 use App\Http\Controllers\BankSampahIndukController;
+use App\Http\Controllers\BeritaController;
 use App\Models\JenisSampah;
 use Illuminate\Http\Request;
 
@@ -38,6 +39,9 @@ Route::get('/', function (Request $request) {
 
 // 2. Halaman Informasi
 Route::get('/information', [InformationController::class, 'index'])->name('information');
+
+// Halaman Berita
+Route::get('/news', [BeritaController::class, 'publicIndex'])->name('news.index');
 
 // 3. Halaman Dashboard
 Route::get('/dashboard', [DashboardController::class, 'index'])
@@ -73,6 +77,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/nasabah/cetak-cash', [PencairanController::class, 'cetakCash'])->name('pencairan.cash.cetak');
 
     Route::resource('jenis-sampah', JenisSampahController::class);
+
+    // Tambahkan baris ini untuk Manajemen Berita:
+    Route::resource('berita', BeritaController::class)->parameters([
+        'berita' => 'id'
+    ]);
 
     // Route untuk Kelola Laporan
     Route::get('/admin/laporan', [LaporanController::class, 'index'])->name('admin.laporan.index');

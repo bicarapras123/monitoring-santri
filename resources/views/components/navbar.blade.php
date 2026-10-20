@@ -17,9 +17,7 @@
             <nav class="hidden md:flex items-center bg-slate-100 p-1 rounded-full border border-slate-200">
                 <a href="{{ url('/') }}" class="px-5 py-1.5 rounded-full {{ request()->is('/') ? 'bg-white text-emerald-600 font-semibold shadow-sm' : 'text-slate-600 hover:text-slate-900 font-medium' }} text-sm transition">Beranda</a>
                 <a href="{{ route('information') }}" class="px-5 py-1.5 rounded-full {{ request()->routeIs('information') ? 'bg-white text-emerald-600 font-semibold shadow-sm' : 'text-slate-600 hover:text-slate-900 font-medium' }} text-sm transition">Informasi</a>
-                <a href="#" class="px-5 py-1.5 rounded-full text-slate-600 hover:text-slate-900 font-medium text-sm transition">Penjualan</a>
-                <a href="#" class="px-5 py-1.5 rounded-full text-slate-600 hover:text-slate-900 font-medium text-sm transition">Berita</a>
-            </nav>
+                <a href="{{ route('news.index') }}" class="px-5 py-1.5 rounded-full {{ request()->routeIs('news.*') ? 'bg-white text-emerald-600 font-semibold shadow-sm' : 'text-slate-600 hover:text-slate-900 font-medium' }} text-sm transition">Berita</a>            </nav>
 
             {{-- BUTTON & HAMBURGER (Desktop: Button, Mobile: Hamburger) --}}
             <div class="flex items-center gap-4">
@@ -44,7 +42,6 @@
     <div x-show="open" class="md:hidden bg-white border-b border-slate-100 px-6 py-4 space-y-3">
         <a href="{{ url('/') }}" class="block {{ request()->is('/') ? 'text-emerald-600 font-bold' : 'text-slate-700' }} font-medium">Beranda</a>
         <a href="{{ route('information') }}" class="block {{ request()->routeIs('information') ? 'text-emerald-600 font-bold' : 'text-slate-700' }} font-medium">Informasi</a>
-        <a href="#" class="block text-slate-700 font-medium">Penjualan</a>
         <a href="#" class="block text-slate-700 font-medium">Berita</a>
         <hr>
         <div class="flex flex-col gap-2">
